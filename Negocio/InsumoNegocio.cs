@@ -13,7 +13,7 @@ namespace Negocio
 
             try
             {
-                datos.setearConsulta("SELECT I.Id, I.Nombre, I.Descripcion, I.Precio, I.StockActual, I.Activo, C.Id AS IdCategoria, C.Descripcion AS Categoria FROM Insumos I INNER JOIN CategoriasInsumo C ON I.IdCategoria = C.Id WHERE I.Activo = 1");
+                datos.setearConsulta("SELECT I.Id, I.Nombre, I.Descripcion, I.Precio, I.StockActual, I.Activo, C.Id AS IdCategoria, C.Descripcion AS Categoria FROM Insumos I INNER JOIN CategoriasInsumo C ON I.IdCategoria = C.Id");
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())

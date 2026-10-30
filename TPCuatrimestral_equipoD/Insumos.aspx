@@ -39,6 +39,11 @@
                 <%# Eval("stockactual") %>
             </ItemTemplate>
         </asp:TemplateField>
+             <asp:TemplateField HeaderText="Estado">
+                 <itemtemplate>
+                     <%# (bool)Eval("activo") ? "Activo" : "Inactivo" %>
+                 </itemtemplate>
+             </asp:TemplateField>
         </Columns>
     </asp:GridView>
     <view
