@@ -23,5 +23,14 @@ namespace TPCuatrimestral_equipoD
             dgvInsumos.DataSource = negocio.listar();
             dgvInsumos.DataBind();
         }
+        protected void btnCambiarEstado_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            int idSeleccionado = int.Parse(btn.CommandArgument);
+            InsumoNegocio negocio = new InsumoNegocio();
+            negocio.cambiarEstado(idSeleccionado);
+
+            CargarInsumos();
+        }
     }
 }

@@ -5,7 +5,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>INSUMOS</h2>
-        <a href="#" class="btn btn-primary">Agregar Insumo</a>
+        <a href="FormularioInsumo.aspx" class="btn btn-primary">Agregar Insumo</a>
         </div>
     <asp:GridView ID="dgvInsumos" runat="server" CssClass="table table-striped table-hover" AutoGenerateColumns="false">
         <Columns>
@@ -43,8 +43,20 @@
                  <itemtemplate>
                      <%# (bool)Eval("activo") ? "Activo" : "Inactivo" %>
                  </itemtemplate>
-             </asp:TemplateField>
+        </asp:TemplateField>
+             <asp:TemplateField HeaderText="Acciones">
+                 <ItemTemplate>
+                     <div class="d-flex gap-2"> 
+                         <a href="FormularioInsumo.aspx?id=<%# Eval("id") %>" class="btn btn-sm btn-primary">Editar</a>
+
+                         <asp:Button ID="btnCambiarEstado" runat="server" 
+                            Text='<%# (bool)Eval("activo") ? "Inactivar" : "Reactivar" %>' 
+                            CssClass='<%# (bool)Eval("activo") ? "btn btn-sm btn-danger" : "btn btn-sm btn-success" %>' 
+                            CommandArgument='<%# Eval("id") %>' 
+                            OnClick="btnCambiarEstado_Click" />
+                      </div>
+                 </ItemTemplate>
+        </asp:TemplateField>
         </Columns>
     </asp:GridView>
-    <view
 </asp:Content>

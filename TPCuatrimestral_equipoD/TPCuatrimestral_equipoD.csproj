@@ -70,6 +70,7 @@
     <Content Include="bin\Dominio.dll" />
     <Content Include="bin\Negocio.dll" />
     <Content Include="Default.aspx" />
+    <Content Include="FormularioInsumo.aspx" />
     <Content Include="Insumos.aspx" />
     <Content Include="Mesas.aspx" />
     <Content Include="obj\Debug\TPCuatrimestral_equipoD.csproj.FileListAbsolute.txt" />
@@ -85,6 +86,13 @@
     </Compile>
     <Compile Include="Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FormularioInsumo.aspx.cs">
+      <DependentUpon>FormularioInsumo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FormularioInsumo.aspx.designer.cs">
+      <DependentUpon>FormularioInsumo.aspx</DependentUpon>
     </Compile>
     <Compile Include="Insumos.aspx.cs">
       <DependentUpon>Insumos.aspx</DependentUpon>
