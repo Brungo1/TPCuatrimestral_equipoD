@@ -4,62 +4,110 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2>CATEGORIAS DE INSUMOS</h2>
+        <div>
+            <h2>Categorias de Insumos</h2>
+            <p class="text-secondary">
+                Administracion de categorias de platos y bebidas
+            </p>
+        </div>
         <a href="Insumos.aspx" class="btn btn-outline-secondary">Volver a Insumos</a>
     </div>
 
-    <div class="row g-2 align-items-end mb-4">
-        <div class="col-md-5">
-            <label class="form-label">Nueva Categoria</label>
-            <asp:TextBox ID="txtDescripcion" runat="server" CssClass="form-control" placeholder="Descripcion de la categoria..." />
-        </div>
-        <div class="col-md-3">
-            <asp:Button ID="btnAgregar" runat="server" Text="Agregar Categoria" CssClass="btn btn-primary" OnClick="btnAgregar_Click" />
+    <asp:Label
+        ID="lblMensaje"
+        runat="server"
+        CssClass="alert alert-danger d-block"
+        Visible="false">
+    </asp:Label>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row g-2 align-items-end">
+                <div class="col-md-5">
+                    <label class="form-label">Descripcion de la Categoria</label>
+                    <asp:TextBox ID="txtDescripcion" runat="server" CssClass="form-control" placeholder="Ej: Entradas, Postres..." />
+                </div>
+                <div class="col-md-4 d-flex gap-2">
+                    <asp:Button ID="btnAgregar" runat="server" Text="Guardar Categoria" CssClass="btn btn-primary" OnClick="btnAgregar_Click" />
+                    <a href="CategoriasInsumo.aspx" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <asp:Label ID="lblMensaje" runat="server" CssClass="text-danger d-block mb-3" Visible="false" />
+    <div class="card shadow-sm">
 
-    <asp:GridView ID="dgvCategorias" runat="server" CssClass="table table-striped table-hover align-middle" AutoGenerateColumns="false" OnRowCommand="dgvCategorias_RowCommand">
-        <Columns>
-            <asp:TemplateField HeaderText="ID">
-                <ItemTemplate>
-                    <%# Eval("id") %>
-                </ItemTemplate>
-            </asp:TemplateField>
+        <div class="card-body">
 
-            <asp:TemplateField HeaderText="Descripcion">
-                <ItemTemplate>
-                    <%# Eval("descripcion") %>
-                </ItemTemplate>
-            </asp:TemplateField>
+            <div class="table-responsive">
 
-            <asp:TemplateField HeaderText="Estado">
-                <ItemTemplate>
-                    <%# (bool)Eval("activo") ? "Activa" : "Inactiva" %>
-                </ItemTemplate>
-            </asp:TemplateField>
+                <asp:GridView
+                    ID="dgvCategorias"
+                    runat="server"
+                    AutoGenerateColumns="false"
+                    CssClass="table table-hover align-middle"
+                    OnRowCommand="dgvCategorias_RowCommand">
 
-            <asp:TemplateField HeaderText="Acciones">
-                <ItemTemplate>
-                    <asp:LinkButton ID="btnCambiarEstado" runat="server"
-                        CommandName="CambiarEstado"
-                        CommandArgument='<%# Eval("id") + "," + Eval("activo") %>'
-                        CssClass='<%# (bool)Eval("activo") ? "btn btn-sm btn-outline-warning me-1" : "btn btn-sm btn-outline-success me-1" %>'>
-                        <%# (bool)Eval("activo") ? "Dar de Baja" : "Activar" %>
-                    </asp:LinkButton>
+                    <Columns>
 
-                    <asp:LinkButton ID="btnEliminar" runat="server"
-                        CommandName="Eliminar"
-                        CommandArgument='<%# Eval("id") %>'
-                        OnClientClick="return confirm('Esta seguro que desea eliminar esta categoria?');"
-                        CssClass="btn btn-sm btn-outline-danger">
-                        Eliminar
-                    </asp:LinkButton>
-                </ItemTemplate>
-            </asp:TemplateField>
-        </Columns>
-    </asp:GridView>
+                        <asp:TemplateField HeaderText="ID">
+                            <ItemTemplate>
+                                <%# Eval("id") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
+                        <asp:TemplateField HeaderText="Descripcion">
+                            <ItemTemplate>
+                                <%# Eval("descripcion") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
+                        <asp:TemplateField HeaderText="Estado">
+                            <ItemTemplate>
+                                <%# (bool)Eval("activo")
+                                    ? "<span class='badge bg-success'>Activa</span>"
+                                    : "<span class='badge bg-danger'>Inactiva</span>" %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
+                        <asp:TemplateField HeaderText="Acciones">
+                            <ItemTemplate>
+
+                                <a href='CategoriasInsumo.aspx?id=<%# Eval("id") %>'
+                                   class="btn btn-sm btn-outline-primary">
+                                    Editar
+                                </a>
+
+                                <asp:LinkButton
+                                    ID="btnCambiarEstado"
+                                    runat="server"
+                                    CssClass="btn btn-sm btn-outline-secondary"
+                                    CommandName="CambiarEstado"
+                                    CommandArgument='<%# Eval("id") + "," + Eval("activo") %>'>
+                                    <%# (bool)Eval("activo") ? "Dar de Baja" : "Reactivar" %>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton
+                                    ID="btnEliminar"
+                                    runat="server"
+                                    CssClass="btn btn-sm btn-outline-danger"
+                                    CommandName="Eliminar"
+                                    CommandArgument='<%# Eval("id") %>'
+                                    OnClientClick="return confirm('Seguro que queres eliminar esta categoria?');">
+                                    Eliminar
+                                </asp:LinkButton>
+
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
+                    </Columns>
+
+                </asp:GridView>
+
+            </div>
+
+        </div>
+
+    </div>
 
 </asp:Content>
-

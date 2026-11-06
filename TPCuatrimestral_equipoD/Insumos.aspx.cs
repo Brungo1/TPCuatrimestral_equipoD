@@ -1,9 +1,5 @@
-﻿using Negocio;
+using Negocio;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace TPCuatrimestral_equipoD
@@ -39,7 +35,8 @@ namespace TPCuatrimestral_equipoD
                 negocio.cambiarEstado(id, !activoActual);
                 CargarInsumos();
             }
-            else if (e.CommandName == "Eliminar")
+
+            if (e.CommandName == "Eliminar")
             {
                 try
                 {

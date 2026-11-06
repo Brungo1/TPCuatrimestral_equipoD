@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Dominio;
 
@@ -13,7 +13,11 @@ namespace Negocio
 
             try
             {
-                datos.setearConsulta("SELECT I.Id, I.Nombre, I.Descripcion, I.Precio, I.StockActual, I.Activo, C.Id AS IdCategoria, C.Descripcion AS Categoria FROM Insumos I INNER JOIN CategoriasInsumo C ON I.IdCategoria = C.Id");
+                datos.setearConsulta(
+                    "SELECT I.Id, I.Nombre, I.Descripcion, I.Precio, I.StockActual, I.Activo, " +
+                    "C.Id AS IdCategoria, C.Descripcion AS Categoria " +
+                    "FROM Insumos I INNER JOIN CategoriasInsumo C ON I.IdCategoria = C.Id"
+                );
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
@@ -48,19 +52,104 @@ namespace Negocio
             }
         }
 
+        public Insumo buscarPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(
+                    "SELECT I.Id, I.Nombre, I.Descripcion, I.Precio, I.StockActual, I.Activo, " +
+                    "C.Id AS IdCategoria, C.Descripcion AS Categoria " +
+                    "FROM Insumos I INNER JOIN CategoriasInsumo C ON I.IdCategoria = C.Id " +
+                    "WHERE I.Id = @id"
+                );
+                datos.setearParametro("@id", id);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    Insumo aux = new Insumo();
+                    aux.id = (int)datos.Lector["Id"];
+                    aux.nombre = (string)datos.Lector["Nombre"];
+
+                    if (!(datos.Lector["Descripcion"] is DBNull))
+                        aux.descripcion = (string)datos.Lector["Descripcion"];
+
+                    aux.precio = (decimal)datos.Lector["Precio"];
+                    aux.stockactual = (int)datos.Lector["StockActual"];
+                    aux.activo = (bool)datos.Lector["Activo"];
+
+                    aux.categoria = new CategoriaInsumo();
+                    aux.categoria.id = (int)datos.Lector["IdCategoria"];
+                    aux.categoria.descripcion = (string)datos.Lector["Categoria"];
+
+                    return aux;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
         public void agregar(Insumo nuevo)
         {
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                datos.setearConsulta("INSERT INTO Insumos (Nombre, Descripcion, IdCategoria, Precio, StockActual, Activo) VALUES (@nombre, @descripcion, @idCategoria, @precio, @stockActual, @activo)");
+                datos.setearConsulta(
+                    "INSERT INTO Insumos (Nombre, Descripcion, IdCategoria, Precio, StockActual, Activo) " +
+                    "VALUES (@nombre, @descripcion, @idCategoria, @precio, @stockActual, @activo)"
+                );
                 datos.setearParametro("@nombre", nuevo.nombre);
                 datos.setearParametro("@descripcion", string.IsNullOrWhiteSpace(nuevo.descripcion) ? (object)DBNull.Value : nuevo.descripcion);
                 datos.setearParametro("@idCategoria", nuevo.categoria.id);
                 datos.setearParametro("@precio", nuevo.precio);
                 datos.setearParametro("@stockActual", nuevo.stockactual);
                 datos.setearParametro("@activo", nuevo.activo);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void modificar(Insumo insumo)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(
+                    "UPDATE Insumos SET " +
+                    "Nombre = @nombre, " +
+                    "Descripcion = @descripcion, " +
+                    "IdCategoria = @idCategoria, " +
+                    "Precio = @precio, " +
+                    "StockActual = @stockActual, " +
+                    "Activo = @activo " +
+                    "WHERE Id = @id"
+                );
+                datos.setearParametro("@nombre", insumo.nombre);
+                datos.setearParametro("@descripcion", string.IsNullOrWhiteSpace(insumo.descripcion) ? (object)DBNull.Value : insumo.descripcion);
+                datos.setearParametro("@idCategoria", insumo.categoria.id);
+                datos.setearParametro("@precio", insumo.precio);
+                datos.setearParametro("@stockActual", insumo.stockactual);
+                datos.setearParametro("@activo", insumo.activo);
+                datos.setearParametro("@id", insumo.id);
                 datos.ejecutarAccion();
             }
             catch (Exception ex)
@@ -83,6 +172,38 @@ namespace Negocio
                 datos.setearParametro("@activo", activo);
                 datos.setearParametro("@id", id);
                 datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public bool existeNombreInsumo(string nombre, int idExcluir)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(
+                    "SELECT COUNT(*) AS Cantidad " +
+                    "FROM Insumos " +
+                    "WHERE Nombre = @nombre AND Id <> @id"
+                );
+                datos.setearParametro("@nombre", nombre);
+                datos.setearParametro("@id", idExcluir);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    return (int)datos.Lector["Cantidad"] > 0;
+                }
+
+                return false;
             }
             catch (Exception ex)
             {

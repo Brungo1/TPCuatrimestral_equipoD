@@ -1,10 +1,6 @@
-﻿using Dominio;
+using Dominio;
 using Negocio;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace TPCuatrimestral_equipoD
@@ -16,6 +12,12 @@ namespace TPCuatrimestral_equipoD
             if (!IsPostBack)
             {
                 CargarCategorias();
+
+                if (Request.QueryString["id"] != null)
+                {
+                    int id = int.Parse(Request.QueryString["id"]);
+                    cargarCategoria(id);
+                }
             }
         }
 
@@ -26,27 +28,70 @@ namespace TPCuatrimestral_equipoD
             dgvCategorias.DataBind();
         }
 
+        private void cargarCategoria(int id)
+        {
+            CategoriaInsumoNegocio negocio = new CategoriaInsumoNegocio();
+            CategoriaInsumo categoria = negocio.buscarPorId(id);
+
+            if (categoria != null)
+            {
+                txtDescripcion.Text = categoria.descripcion;
+            }
+        }
+
         protected void btnAgregar_Click(object sender, EventArgs e)
         {
-            lblMensaje.Visible = false;
-            string descripcion = txtDescripcion.Text.Trim();
-
-            if (string.IsNullOrWhiteSpace(descripcion))
+            try
             {
-                lblMensaje.Text = "Por favor ingrese la descripcion de la categoria.";
-                lblMensaje.Visible = true;
-                return;
+                lblMensaje.Visible = false;
+                CategoriaInsumoNegocio negocio = new CategoriaInsumoNegocio();
+
+                int id = 0;
+                if (Request.QueryString["id"] != null)
+                    id = int.Parse(Request.QueryString["id"]);
+
+                string descripcion = txtDescripcion.Text.Trim();
+
+                if (string.IsNullOrWhiteSpace(descripcion))
+                {
+                    lblMensaje.Text = "Por favor ingrese la descripcion de la categoria.";
+                    lblMensaje.Visible = true;
+                    return;
+                }
+
+                if (negocio.existeCategoria(descripcion, id))
+                {
+                    lblMensaje.Text = "La categoria ya existe.";
+                    lblMensaje.Visible = true;
+                    return;
+                }
+
+                CategoriaInsumo categoria = new CategoriaInsumo();
+                categoria.id = id;
+                categoria.descripcion = descripcion;
+                categoria.activo = true;
+
+                if (id == 0)
+                {
+                    negocio.agregar(categoria);
+                    txtDescripcion.Text = string.Empty;
+                    CargarCategorias();
+                }
+                else
+                {
+                    CategoriaInsumo actual = negocio.buscarPorId(id);
+                    if (actual != null)
+                        categoria.activo = actual.activo;
+
+                    negocio.modificar(categoria);
+                    Response.Redirect("CategoriasInsumo.aspx", false);
+                }
             }
-
-            CategoriaInsumo nueva = new CategoriaInsumo();
-            nueva.descripcion = descripcion;
-            nueva.activo = true;
-
-            CategoriaInsumoNegocio negocio = new CategoriaInsumoNegocio();
-            negocio.agregar(nueva);
-
-            txtDescripcion.Text = string.Empty;
-            CargarCategorias();
+            catch (Exception ex)
+            {
+                lblMensaje.Text = ex.Message;
+                lblMensaje.Visible = true;
+            }
         }
 
         protected void dgvCategorias_RowCommand(object sender, GridViewCommandEventArgs e)
@@ -63,7 +108,8 @@ namespace TPCuatrimestral_equipoD
                 negocio.cambiarEstado(id, !activoActual);
                 CargarCategorias();
             }
-            else if (e.CommandName == "Eliminar")
+
+            if (e.CommandName == "Eliminar")
             {
                 try
                 {
@@ -80,4 +126,3 @@ namespace TPCuatrimestral_equipoD
         }
     }
 }
-
