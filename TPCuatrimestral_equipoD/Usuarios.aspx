@@ -13,15 +13,21 @@
 
             <p class="text-secondary">
                 Administracion de gerentes y meseros
+           
             </p>
         </div>
 
-        <button type="button" class="btn btn-primary">
-            Agregar Usuario
-        </button>
+        <a href="FormularioUsuario.aspx" class="btn btn-primary">Agregar Usuario
+        </a>
 
     </div>
 
+    <asp:Label
+        ID="lblMensaje"
+        runat="server"
+        CssClass="alert alert-danger d-block"
+        Visible="false">
+    </asp:Label>
 
     <div class="card shadow-sm">
 
@@ -29,73 +35,81 @@
 
             <div class="table-responsive">
 
-                <table class="table table-hover align-middle">
+                <asp:GridView
+                    ID="dgvUsuarios"
+                    runat="server"
+                    AutoGenerateColumns="false"
+                    CssClass="table table-hover align-middle"
+                    OnRowCommand="dgvUsuarios_Accion">
 
-                    <thead>
-                        <tr>
-                            <th>Usuario</th>
-                            <th>Nombre</th>
-                            <th>Apellido</th>
-                            <th>Perfil</th>
-                            <th>Estado</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
+                    <Columns>
 
-                    <tbody>
+                        <asp:BoundField
+                            DataField="nombreusuario"
+                            HeaderText="Usuario" />
 
-                        <tr>
-                            <td>gerente</td>
-                            <td>Carlos</td>
-                            <td>Gomez</td>
+                        <asp:BoundField
+                            DataField="nombre"
+                            HeaderText="Nombre" />
 
-                            <td>
-                                <span class="badge bg-dark">
-                                    Gerente
-                                </span>
-                            </td>
+                        <asp:BoundField
+                            DataField="apellido"
+                            HeaderText="Apellido" />
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Activo
-                                </span>
-                            </td>
+                        <asp:BoundField
+                            DataField="perfil"
+                            HeaderText="Perfil" />
 
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-primary">
-                                    Editar
-                                </button>
-                            </td>
-                        </tr>
+                        <asp:TemplateField HeaderText="Estado">
 
+                            <ItemTemplate>
 
-                        <tr>
-                            <td>mesero1</td>
-                            <td>Juan</td>
-                            <td>Perez</td>
+                                <%# (bool)Eval("activo")
+                                    ? "<span class='badge bg-success'>Activo</span>"
+                                    : "<span class='badge bg-danger'>Inactivo</span>" %>
+                            </ItemTemplate>
 
-                            <td>
-                                <span class="badge bg-primary">
-                                    Mesero
-                                </span>
-                            </td>
+                        </asp:TemplateField>
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Activo
-                                </span>
-                            </td>
+                       <asp:TemplateField HeaderText="Acciones">
 
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-primary">
-                                    Editar
-                                </button>
-                            </td>
-                        </tr>
+    <ItemTemplate>
 
-                    </tbody>
+        <a href='FormularioUsuario.aspx?id=<%# Eval("id") %>'
+           class="btn btn-sm btn-outline-primary">
+            Editar
+        </a>
 
-                </table>
+        <asp:LinkButton
+            ID="btnEstado"
+            runat="server"
+            CssClass="btn btn-sm btn-outline-secondary"
+            CommandName="CambiarEstado"
+            CommandArgument='<%# Eval("id") + "," + Eval("activo") %>'>
+
+            <%# (bool)Eval("activo") ? "Dar de Baja" : "Reactivar" %>
+
+        </asp:LinkButton>
+
+        <asp:LinkButton
+            ID="btnEliminar"
+            runat="server"
+            CssClass="btn btn-sm btn-outline-danger"
+            CommandName="Eliminar"
+            CommandArgument='<%# Eval("id") %>'
+            OnClientClick="return confirm('¿Seguro que queres eliminar este usuario?');">
+
+            Eliminar
+
+        </asp:LinkButton>
+
+    </ItemTemplate>
+
+</asp:TemplateField>
+
+                    </Columns>
+
+                </asp:GridView>
 
             </div>
 

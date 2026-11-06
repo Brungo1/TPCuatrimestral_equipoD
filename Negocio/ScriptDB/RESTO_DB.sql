@@ -90,3 +90,10 @@ INSERT INTO Insumos (Nombre, Descripcion, IdCategoria, Precio, StockActual, Acti
 ('Flan Casero Mixto', 'Con dulce de leche y crema', 5, 4500.00, 30, 1),
 ('Tiramisú', 'Postre tradicional con mascarpone y café', 5, 5400.00, 18, 1);
 GO
+INSERT INTO Usuarios
+(NombreUsuario, Contrasenia, Nombre, Apellido, IdPerfil, Activo)
+VALUES
+('gerente1', '1234', 'Carlos', 'Gomez', 1, 1),
+('mesero1', '1234', 'Juan', 'Perez', 2, 1),
+('mesero2', '1234', 'Pedro', 'Lopez', 2, 1);
+GO

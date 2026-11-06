@@ -72,6 +72,7 @@
     <Content Include="CategoriasInsumo.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="FormularioInsumo.aspx" />
+    <Content Include="FormularioUsuario.aspx" />
     <Content Include="Insumos.aspx" />
     <Content Include="Mesas.aspx" />
     <Content Include="obj\Debug\TPCuatrimestral_equipoD.csproj.FileListAbsolute.txt" />
@@ -101,6 +102,13 @@
     </Compile>
     <Compile Include="FormularioInsumo.aspx.designer.cs">
       <DependentUpon>FormularioInsumo.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="FormularioUsuario.aspx.cs">
+      <DependentUpon>FormularioUsuario.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="FormularioUsuario.aspx.designer.cs">
+      <DependentUpon>FormularioUsuario.aspx</DependentUpon>
     </Compile>
     <Compile Include="Insumos.aspx.cs">
       <DependentUpon>Insumos.aspx</DependentUpon>

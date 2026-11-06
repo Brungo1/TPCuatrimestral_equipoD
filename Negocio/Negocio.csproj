@@ -45,6 +45,7 @@
     <Compile Include="CategoriaInsumoNegocio.cs" />
     <Compile Include="InsumoNegocio.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UsuarioNegocio.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="ScriptDB\RESTO_DB.sql" />
