@@ -16,21 +16,43 @@ namespace TPCuatrimestral_equipoD
             {
                 CargarInsumos();
             }
-            }
+        }
+
         private void CargarInsumos()
         {
             InsumoNegocio negocio = new InsumoNegocio();
             dgvInsumos.DataSource = negocio.listar();
             dgvInsumos.DataBind();
         }
-        protected void btnCambiarEstado_Click(object sender, EventArgs e)
-        {
-            Button btn = (Button)sender;
-            int idSeleccionado = int.Parse(btn.CommandArgument);
-            InsumoNegocio negocio = new InsumoNegocio();
-            negocio.cambiarEstado(idSeleccionado);
 
-            CargarInsumos();
+        protected void dgvInsumos_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            lblMensaje.Visible = false;
+            InsumoNegocio negocio = new InsumoNegocio();
+
+            if (e.CommandName == "CambiarEstado")
+            {
+                string[] datos = e.CommandArgument.ToString().Split(',');
+                int id = int.Parse(datos[0]);
+                bool activoActual = bool.Parse(datos[1]);
+
+                negocio.cambiarEstado(id, !activoActual);
+                CargarInsumos();
+            }
+            else if (e.CommandName == "Eliminar")
+            {
+                try
+                {
+                    int id = int.Parse(e.CommandArgument.ToString());
+                    negocio.eliminar(id);
+                    CargarInsumos();
+                }
+                catch (Exception)
+                {
+                    lblMensaje.Text = "No se puede eliminar el insumo porque tiene registros asociados. Utilice 'Dar de Baja'.";
+                    lblMensaje.Visible = true;
+                }
+            }
         }
     }
 }

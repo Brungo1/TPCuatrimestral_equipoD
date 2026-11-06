@@ -69,6 +69,7 @@
   <ItemGroup>
     <Content Include="bin\Dominio.dll" />
     <Content Include="bin\Negocio.dll" />
+    <Content Include="CategoriasInsumo.aspx" />
     <Content Include="Default.aspx" />
     <Content Include="FormularioInsumo.aspx" />
     <Content Include="Insumos.aspx" />
@@ -80,6 +81,13 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CategoriasInsumo.aspx.cs">
+      <DependentUpon>CategoriasInsumo.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="CategoriasInsumo.aspx.designer.cs">
+      <DependentUpon>CategoriasInsumo.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

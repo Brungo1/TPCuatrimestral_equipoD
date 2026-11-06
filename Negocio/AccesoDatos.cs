@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Data.SqlClient;
 
 namespace Negocio
@@ -22,6 +22,7 @@ namespace Negocio
 
         public void setearConsulta(string consulta)
         {
+            comando.Parameters.Clear();
             comando.CommandType = System.Data.CommandType.Text;
             comando.CommandText = consulta;
         }

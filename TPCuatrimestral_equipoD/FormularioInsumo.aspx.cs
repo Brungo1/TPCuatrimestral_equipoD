@@ -1,7 +1,12 @@
-﻿using System;
-using System.Linq;
-using Dominio;
+﻿using Dominio;
 using Negocio;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
 
 namespace TPCuatrimestral_equipoD
 {
@@ -11,64 +16,56 @@ namespace TPCuatrimestral_equipoD
         {
             if (!IsPostBack)
             {
-                CategoriaInsumoNegocio negocioCategoria = new CategoriaInsumoNegocio();
-                ddlCategoria.DataSource = negocioCategoria.listar();
+                CategoriaInsumoNegocio categoriaNegocio = new CategoriaInsumoNegocio();
+                ddlCategoria.DataSource = categoriaNegocio.listar(true);
                 ddlCategoria.DataTextField = "descripcion";
                 ddlCategoria.DataValueField = "id";
                 ddlCategoria.DataBind();
-
-                if (Request.QueryString["id"] != null)
-                {
-                    int idSeleccionado = int.Parse(Request.QueryString["id"]);
-                    InsumoNegocio negocio = new InsumoNegocio();
-
-                    Insumo insumoEditar = negocio.listar().Find(x => x.id == idSeleccionado);
-
-                    if (insumoEditar != null)
-                    {
-                        txtNombre.Text = insumoEditar.nombre;
-                        txtDescripcion.Text = insumoEditar.descripcion;
-                        txtPrecio.Text = insumoEditar.precio.ToString();
-                        txtStock.Text = insumoEditar.stockactual.ToString();
-                        ddlCategoria.SelectedValue = insumoEditar.categoria.id.ToString();
-                    }
-                }
             }
         }
 
-        protected void btnAceptar_Click(object sender, EventArgs e)
+        protected void btnGuardar_Click(object sender, EventArgs e)
         {
-            if (!Page.IsValid) return;
+            lblMensaje.Visible = false;
+
+            if (string.IsNullOrWhiteSpace(txtNombre.Text) ||
+                string.IsNullOrWhiteSpace(txtPrecio.Text) ||
+                string.IsNullOrWhiteSpace(txtStock.Text))
+            {
+                lblMensaje.Text = "Por favor complete Nombre, Precio y Stock.";
+                lblMensaje.Visible = true;
+                return;
+            }
+
+            decimal precio;
+            if (!decimal.TryParse(txtPrecio.Text.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out precio))
+            {
+                lblMensaje.Text = "El precio ingresado no es valido.";
+                lblMensaje.Visible = true;
+                return;
+            }
+
+            int stock;
+            if (!int.TryParse(txtStock.Text, out stock))
+            {
+                lblMensaje.Text = "El stock ingresado no es valido.";
+                lblMensaje.Visible = true;
+                return;
+            }
 
             Insumo nuevo = new Insumo();
+            nuevo.nombre = txtNombre.Text.Trim();
+            nuevo.descripcion = txtDescripcion.Text.Trim();
+            nuevo.categoria = new CategoriaInsumo();
+            nuevo.categoria.id = int.Parse(ddlCategoria.SelectedValue);
+            nuevo.precio = precio;
+            nuevo.stockactual = stock;
+            nuevo.activo = chkActivo.Checked;
+
             InsumoNegocio negocio = new InsumoNegocio();
+            negocio.agregar(nuevo);
 
-            try
-            {
-                nuevo.nombre = txtNombre.Text;
-                nuevo.descripcion = txtDescripcion.Text;
-                nuevo.precio = decimal.Parse(txtPrecio.Text);
-                nuevo.stockactual = int.Parse(txtStock.Text);
-
-                nuevo.categoria = new CategoriaInsumo();
-                nuevo.categoria.id = int.Parse(ddlCategoria.SelectedValue);
-
-                if (Request.QueryString["id"] != null)
-                {
-                    nuevo.id = int.Parse(Request.QueryString["id"]);
-                    negocio.modificar(nuevo);
-                }
-                else
-                {
-                    negocio.agregar(nuevo);
-                }
-
-                Response.Redirect("Insumos.aspx", false);
-            }
-            catch (Exception ex)
-            {
-                Session["Error"] = ex.ToString();
-            }
+            Response.Redirect("Insumos.aspx", false);
         }
     }
 }

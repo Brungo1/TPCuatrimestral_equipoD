@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using Dominio;
 
@@ -51,15 +51,16 @@ namespace Negocio
         public void agregar(Insumo nuevo)
         {
             AccesoDatos datos = new AccesoDatos();
+
             try
             {
-                datos.setearConsulta("INSERT INTO Insumos (Nombre, Descripcion, IdCategoria, Precio, StockActual, Activo) VALUES (@nombre, @descripcion, @idCategoria, @precio, @stock, 1)");
+                datos.setearConsulta("INSERT INTO Insumos (Nombre, Descripcion, IdCategoria, Precio, StockActual, Activo) VALUES (@nombre, @descripcion, @idCategoria, @precio, @stockActual, @activo)");
                 datos.setearParametro("@nombre", nuevo.nombre);
-                datos.setearParametro("@descripcion", nuevo.descripcion);
+                datos.setearParametro("@descripcion", string.IsNullOrWhiteSpace(nuevo.descripcion) ? (object)DBNull.Value : nuevo.descripcion);
                 datos.setearParametro("@idCategoria", nuevo.categoria.id);
                 datos.setearParametro("@precio", nuevo.precio);
-                datos.setearParametro("@stock", nuevo.stockactual);
-
+                datos.setearParametro("@stockActual", nuevo.stockactual);
+                datos.setearParametro("@activo", nuevo.activo);
                 datos.ejecutarAccion();
             }
             catch (Exception ex)
@@ -72,40 +73,35 @@ namespace Negocio
             }
         }
 
-        public void modificar(Insumo insumo)
+        public void cambiarEstado(int id, bool activo)
         {
             AccesoDatos datos = new AccesoDatos();
+
             try
             {
-                datos.setearConsulta("UPDATE Insumos SET Nombre = @nombre, Descripcion = @descripcion, IdCategoria = @idCategoria, Precio = @precio, StockActual = @stock WHERE Id = @id");
-
-                datos.setearParametro("@nombre", insumo.nombre);
-                datos.setearParametro("@descripcion", insumo.descripcion);
-                datos.setearParametro("@idCategoria", insumo.categoria.id);
-                datos.setearParametro("@precio", insumo.precio);
-                datos.setearParametro("@stock", insumo.stockactual);
-                datos.setearParametro("@id", insumo.id); 
-
-                datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                datos.cerrarConexion();
-            }
-        }
-
-        public void cambiarEstado(int id)
-        {
-            AccesoDatos datos = new AccesoDatos();
-            try
-            {
-                datos.setearConsulta("UPDATE Insumos SET Activo = CASE WHEN Activo = 1 THEN 0 ELSE 1 END WHERE Id = @id");
+                datos.setearConsulta("UPDATE Insumos SET Activo = @activo WHERE Id = @id");
+                datos.setearParametro("@activo", activo);
                 datos.setearParametro("@id", id);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
 
+        public void eliminar(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("DELETE FROM Insumos WHERE Id = @id");
+                datos.setearParametro("@id", id);
                 datos.ejecutarAccion();
             }
             catch (Exception ex)

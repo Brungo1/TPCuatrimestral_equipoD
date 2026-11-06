@@ -1,48 +1,51 @@
-﻿<%@ Page Title="Formulario Insumo" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true" CodeBehind="FormularioInsumo.aspx.cs" Inherits="TPCuatrimestral_equipoD.FormularioInsumo" %>
-
+﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true" CodeBehind="FormularioInsumo.aspx.cs" Inherits="TPCuatrimestral_equipoD.FormularioInsumo" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
-
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
-    <div class="row">
-        <div class="col-6">
-            <h2>Agregar/Editar Insumo</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <h2 class="mb-4">Nuevo Insumo</h2>
+
+            <asp:Label ID="lblMensaje" runat="server" CssClass="text-danger d-block mb-3" Visible="false" />
+
             <div class="mb-3">
-                <label for="txtNombre" class="form-label">Nombre</label>
-                <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control"></asp:TextBox>
-                <asp:RequiredFieldValidator ID="rfvNombre" runat="server" ControlToValidate="txtNombre" 
-                    ErrorMessage="El nombre es requerido" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
-            </div>
-            
-            <div class="mb-3">
-                <label for="txtDescripcion" class="form-label">Descripción</label>
-                <asp:TextBox ID="txtDescripcion" runat="server" TextMode="MultiLine" CssClass="form-control"></asp:TextBox>
+                <label class="form-label">Nombre</label>
+                <asp:TextBox ID="txtNombre" runat="server" CssClass="form-control" />
             </div>
 
             <div class="mb-3">
-                <label for="ddlCategoria" class="form-label">Categoría</label>
-                <asp:DropDownList ID="ddlCategoria" runat="server" CssClass="form-select"></asp:DropDownList>
+                <label class="form-label">Descripcion</label>
+                <asp:TextBox ID="txtDescripcion" runat="server" CssClass="form-control" />
             </div>
 
             <div class="mb-3">
-                <label for="txtPrecio" class="form-label">Precio</label>
-                <asp:TextBox ID="txtPrecio" runat="server" CssClass="form-control"></asp:TextBox>
-                <asp:RequiredFieldValidator ID="rfvPrecio" runat="server" ControlToValidate="txtPrecio" 
-                    ErrorMessage="Ingrese un precio" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
-                <asp:RegularExpressionValidator ID="revPrecio" runat="server" ControlToValidate="txtPrecio"
-                    ValidationExpression="^\d+(\,\d+)?$" ErrorMessage="Solo números (use coma para decimales)" 
-                    CssClass="text-danger" Display="Dynamic"></asp:RegularExpressionValidator>
+                <label class="form-label">Categoria</label>
+                <asp:DropDownList ID="ddlCategoria" runat="server" CssClass="form-select" />
             </div>
 
             <div class="mb-3">
-                <label for="txtStock" class="form-label">Stock Actual</label>
-                <asp:TextBox ID="txtStock" runat="server" CssClass="form-control" TextMode="Number"></asp:TextBox>
-                <asp:RequiredFieldValidator ID="rfvStock" runat="server" ControlToValidate="txtStock" 
-                    ErrorMessage="Ingrese el stock" CssClass="text-danger" Display="Dynamic"></asp:RequiredFieldValidator>
+                <label class="form-label">Precio</label>
+                <asp:TextBox ID="txtPrecio" runat="server" CssClass="form-control" />
             </div>
 
-            <asp:Button ID="btnAceptar" runat="server" Text="Aceptar" CssClass="btn btn-primary" OnClick="btnAceptar_Click" />
-            <a href="Insumos.aspx" class="btn btn-secondary">Cancelar</a>
+            <div class="mb-3">
+                <label class="form-label">Stock Actual</label>
+                <asp:TextBox ID="txtStock" runat="server" CssClass="form-control" TextMode="Number" />
+            </div>
+
+            <div class="form-check mb-4">
+                <asp:CheckBox ID="chkActivo" runat="server" Checked="true" />
+                <label class="form-check-label">Activo</label>
+            </div>
+
+            <div class="d-flex gap-2">
+                <asp:Button ID="btnGuardar" runat="server" Text="Agregar" CssClass="btn btn-primary" OnClick="btnGuardar_Click" />
+                <a href="Insumos.aspx" class="btn btn-secondary">Cancelar</a>
+            </div>
+
         </div>
     </div>
+
 </asp:Content>
