@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Dominio;
+using Negocio;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -11,7 +13,30 @@ namespace TPCuatrimestral_equipoD
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!IsPostBack)
+            {
+                CargarMesas();
+            }
+        }
 
+        private void CargarMesas()
+        {
+            MesaNegocio negocio = new MesaNegocio();
+            repMesas.DataSource = negocio.listar(true);
+            repMesas.DataBind();
+        }
+
+        protected string ObtenerClaseBadge(EstadoMesa estado)
+        {
+            switch (estado)
+            {
+                case EstadoMesa.Libre:
+                    return "badge bg-success";
+                case EstadoMesa.Ocupada:
+                    return "badge bg-danger";
+                default:
+                    return "badge bg-secondary";
+            }
         }
     }
 }

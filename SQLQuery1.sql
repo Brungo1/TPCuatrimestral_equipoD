@@ -1,9 +1,9 @@
-CREATE DATABASE RESTO_DB;
-GO
+/*CREATE DATABASE RESTO_DB;
+GO*/
 
 USE RESTO_DB;
-GO
-
+select * from Mesas
+/*
 CREATE TABLE CategoriasInsumo (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(100) NOT NULL,
