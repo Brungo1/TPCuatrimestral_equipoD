@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Dominio;
 
@@ -226,6 +226,49 @@ namespace Negocio
                 datos.setearParametro("@id", id);
 
                 datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public List<Usuario> listarMeserosActivos()
+        {
+            List<Usuario> lista = new List<Usuario>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(
+                    "SELECT Id, NombreUsuario, Contrasenia, Nombre, Apellido, IdPerfil, Activo " +
+                    "FROM Usuarios " +
+                    "WHERE IdPerfil = @perfil AND Activo = 1 " +
+                    "ORDER BY Apellido ASC, Nombre ASC"
+                );
+                datos.setearParametro("@perfil", (int)PerfilUsuario.Mesero);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Usuario aux = new Usuario();
+
+                    aux.id = (int)datos.Lector["Id"];
+                    aux.nombreusuario = (string)datos.Lector["NombreUsuario"];
+                    aux.contrasenia = (string)datos.Lector["Contrasenia"];
+                    aux.nombre = (string)datos.Lector["Nombre"];
+                    aux.apellido = (string)datos.Lector["Apellido"];
+                    aux.perfil = (PerfilUsuario)(int)datos.Lector["IdPerfil"];
+                    aux.activo = (bool)datos.Lector["Activo"];
+
+                    lista.Add(aux);
+                }
+
+                return lista;
             }
             catch (Exception ex)
             {

@@ -80,6 +80,7 @@
     <Content Include="Reportes.aspx" />
     <Content Include="Usuarios.aspx" />
     <Content Include="Web.config" />
+    <Content Include="AsignarMeseros.aspx" />
     <Content Include="FormularioMesa.aspx" />
   </ItemGroup>
   <ItemGroup>
@@ -160,6 +161,13 @@
     </Compile>
     <Compile Include="FormularioMesa.aspx.designer.cs">
       <DependentUpon>FormularioMesa.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="AsignarMeseros.aspx.cs">
+      <DependentUpon>AsignarMeseros.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="AsignarMeseros.aspx.designer.cs">
+      <DependentUpon>AsignarMeseros.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

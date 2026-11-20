@@ -97,3 +97,11 @@ VALUES
 ('mesero1', '1234', 'Juan', 'Perez', 2, 1),
 ('mesero2', '1234', 'Pedro', 'Lopez', 2, 1);
 GO
+
+INSERT INTO Mesas (NumeroMesa, Capacidad, IdEstado, IdMeseroAsignado, Activa) VALUES
+(1, 4, 1, NULL, 1),
+(2, 2, 1, 2, 1),
+(3, 6, 1, 3, 1),
+(4, 4, 3, NULL, 1),
+(5, 2, 1, NULL, 0);
+GO

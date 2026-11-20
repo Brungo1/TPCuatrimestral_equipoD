@@ -1,10 +1,7 @@
-﻿using Dominio;
+using Dominio;
 using Negocio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace TPCuatrimestral_equipoD
@@ -15,11 +12,33 @@ namespace TPCuatrimestral_equipoD
         {
             if (!IsPostBack)
             {
+                cargarMeseros();
+
                 if (Request.QueryString["id"] != null)
                 {
-                    int id = int.Parse(Request.QueryString["id"]);
+                    int id;
+                    if (!int.TryParse(Request.QueryString["id"], out id))
+                    {
+                        Response.Redirect("Mesas.aspx", false);
+                        return;
+                    }
+
                     cargarMesa(id);
                 }
+            }
+        }
+
+        private void cargarMeseros()
+        {
+            UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
+            List<Usuario> meseros = usuarioNegocio.listarMeserosActivos();
+
+            ddlMesero.Items.Clear();
+            ddlMesero.Items.Add(new ListItem("-- Sin asignar --", "0"));
+
+            foreach (Usuario mesero in meseros)
+            {
+                ddlMesero.Items.Add(new ListItem(mesero.nombre + " " + mesero.apellido, mesero.id.ToString()));
             }
         }
 
@@ -28,11 +47,24 @@ namespace TPCuatrimestral_equipoD
             MesaNegocio negocio = new MesaNegocio();
             Mesa mesa = negocio.buscarPorId(id);
 
-            if (mesa != null)
+            if (mesa == null)
             {
-                txtNumeroMesa.Text = mesa.numeromesa.ToString();
-                txtCapacidad.Text = mesa.capacidad.ToString();
-                chkActiva.Checked = mesa.activa;
+                Response.Redirect("Mesas.aspx", false);
+                return;
+            }
+
+            txtNumeroMesa.Text = mesa.numeromesa.ToString();
+            txtCapacidad.Text = mesa.capacidad.ToString();
+            chkActiva.Checked = mesa.activa;
+
+            if (mesa.meseroasignado != null)
+            {
+                string idMeseroStr = mesa.meseroasignado.id.ToString();
+                if (ddlMesero.Items.FindByValue(idMeseroStr) == null)
+                {
+                    ddlMesero.Items.Add(new ListItem(mesa.meseroasignado.nombre + " " + mesa.meseroasignado.apellido + " (Inactivo)", idMeseroStr));
+                }
+                ddlMesero.SelectedValue = idMeseroStr;
             }
         }
 
@@ -44,8 +76,11 @@ namespace TPCuatrimestral_equipoD
                 MesaNegocio negocio = new MesaNegocio();
 
                 int id = 0;
-                if (Request.QueryString["id"] != null)
-                    id = int.Parse(Request.QueryString["id"]);
+                if (Request.QueryString["id"] != null && !int.TryParse(Request.QueryString["id"], out id))
+                {
+                    Response.Redirect("Mesas.aspx", false);
+                    return;
+                }
 
                 if (string.IsNullOrWhiteSpace(txtNumeroMesa.Text) ||
                     string.IsNullOrWhiteSpace(txtCapacidad.Text))
@@ -78,11 +113,34 @@ namespace TPCuatrimestral_equipoD
                     return;
                 }
 
+                if (id > 0 && !chkActiva.Checked)
+                {
+                    Mesa mesaActual = negocio.buscarPorId(id);
+                    if (mesaActual == null)
+                    {
+                        Response.Redirect("Mesas.aspx", false);
+                        return;
+                    }
+
+                    if (mesaActual.estado == EstadoMesa.Ocupada)
+                    {
+                        lblMensaje.Text = "No se puede desactivar una mesa que esta ocupada.";
+                        lblMensaje.Visible = true;
+                        return;
+                    }
+                }
+
                 Mesa mesa = new Mesa();
                 mesa.id = id;
                 mesa.numeromesa = numeroMesa;
                 mesa.capacidad = capacidad;
                 mesa.activa = chkActiva.Checked;
+
+                int idMesero;
+                if (int.TryParse(ddlMesero.SelectedValue, out idMesero) && idMesero > 0)
+                    mesa.meseroasignado = new Usuario { id = idMesero };
+                else
+                    mesa.meseroasignado = null;
 
                 if (id == 0)
                 {

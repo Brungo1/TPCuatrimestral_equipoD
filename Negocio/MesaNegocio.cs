@@ -1,4 +1,4 @@
-﻿using Dominio;
+using Dominio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -118,11 +118,12 @@ namespace Negocio
             {
                 datos.setearConsulta(
                     "INSERT INTO Mesas (NumeroMesa, Capacidad, IdEstado, IdMeseroAsignado, Activa) " +
-                    "VALUES (@numero, @capacidad, @estado, NULL, @activa)"
+                    "VALUES (@numero, @capacidad, @estado, @idMesero, @activa)"
                 );
                 datos.setearParametro("@numero", nueva.numeromesa);
                 datos.setearParametro("@capacidad", nueva.capacidad);
                 datos.setearParametro("@estado", (int)EstadoMesa.Libre);
+                datos.setearParametro("@idMesero", (nueva.meseroasignado != null && nueva.meseroasignado.id > 0) ? (object)nueva.meseroasignado.id : DBNull.Value);
                 datos.setearParametro("@activa", nueva.activa);
                 datos.ejecutarAccion();
             }
@@ -143,11 +144,12 @@ namespace Negocio
             try
             {
                 datos.setearConsulta(
-                    "UPDATE Mesas SET NumeroMesa = @numero, Capacidad = @capacidad, Activa = @activa " +
+                    "UPDATE Mesas SET NumeroMesa = @numero, Capacidad = @capacidad, IdMeseroAsignado = @idMesero, Activa = @activa " +
                     "WHERE Id = @id"
                 );
                 datos.setearParametro("@numero", mesa.numeromesa);
                 datos.setearParametro("@capacidad", mesa.capacidad);
+                datos.setearParametro("@idMesero", (mesa.meseroasignado != null && mesa.meseroasignado.id > 0) ? (object)mesa.meseroasignado.id : DBNull.Value);
                 datos.setearParametro("@activa", mesa.activa);
                 datos.setearParametro("@id", mesa.id);
                 datos.ejecutarAccion();
@@ -173,6 +175,109 @@ namespace Negocio
                 );
                 datos.setearParametro("@estado", (int)estado);
                 datos.setearParametro("@idMesero", idMesero.HasValue ? (object)idMesero.Value : DBNull.Value);
+                datos.setearParametro("@id", idMesa);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void asignarMesero(int idMesa, int? idMesero)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Mesas SET IdMeseroAsignado = @idMesero WHERE Id = @id");
+                datos.setearParametro("@idMesero", (idMesero.HasValue && idMesero.Value > 0) ? (object)idMesero.Value : DBNull.Value);
+                datos.setearParametro("@id", idMesa);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void limpiarAsignacionesMesasNoOcupadas()
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Mesas SET IdMeseroAsignado = NULL WHERE IdEstado <> @ocupada");
+                datos.setearParametro("@ocupada", (int)EstadoMesa.Ocupada);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void cambiarEstadoMesa(int idMesa, EstadoMesa estado)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Mesas SET IdEstado = @estado WHERE Id = @id");
+                datos.setearParametro("@estado", (int)estado);
+                datos.setearParametro("@id", idMesa);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void cambiarActiva(int idMesa, bool activa)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("UPDATE Mesas SET Activa = @activa WHERE Id = @id");
+                datos.setearParametro("@activa", activa);
+                datos.setearParametro("@id", idMesa);
+                datos.ejecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
+
+        public void eliminar(int idMesa)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta("DELETE FROM Mesas WHERE Id = @id");
                 datos.setearParametro("@id", idMesa);
                 datos.ejecutarAccion();
             }

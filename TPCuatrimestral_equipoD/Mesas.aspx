@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true"
+<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true"
     CodeBehind="Mesas.aspx.cs" Inherits="TPCuatrimestral_equipoD.Mesas" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
@@ -6,51 +6,95 @@
 
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
-   <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2>Mesas</h2>
-            <p class="text-secondary">Estado actual de las mesas del restaurante</p>
+            <h2>Gestion de Mesas</h2>
+            <p class="text-secondary">Estado actual y administracion de las mesas del restaurante</p>
         </div>
-        <a href="FormularioMesa.aspx" class="btn btn-primary">Agregar Mesa</a>
+        <div>
+            <a href="AsignarMeseros.aspx" class="btn btn-outline-primary me-2">Asignar Meseros</a>
+            <a href="FormularioMesa.aspx" class="btn btn-primary">Agregar Mesa</a>
+        </div>
     </div>
 
-<div class="row g-4">
-    <asp:Repeater ID="repMesas" runat="server">
-        <ItemTemplate>
-            <div class="col-md-4">
-                <div class='<%# (bool)Eval("activa") ? "card shadow-sm h-100" : "card shadow-sm h-100 bg-light opacity-75" %>'>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <h4 class="card-title mb-0">Mesa <%# Eval("numeromesa") %></h4>
-                            <%# !(bool)Eval("activa") ? "<span class='badge bg-dark'>Inactiva</span>" : "" %>
-                        </div>
+    <asp:Label
+        ID="lblMensaje"
+        runat="server"
+        CssClass="alert alert-danger d-block"
+        Visible="false">
+    </asp:Label>
 
-                        <p>Capacidad: <%# Eval("capacidad") %> personas</p>
-                        <p>
-                            Estado:
-                            <span class='<%# ObtenerClaseBadge((Dominio.EstadoMesa)Eval("estado")) %>'>
-                                <%# Eval("estado") %>
-                            </span>
-                        </p>
-                        <p class="text-secondary">
-                            <%# Eval("meseroasignado") != null 
-                                ? "Mesero: " + Eval("meseroasignado.nombre") + " " + Eval("meseroasignado.apellido") 
-                                : "Sin mesero asignado" %>
-                        </p>
-                        <div class="d-flex gap-2">
-                            <a href='GestionPedido.aspx?idMesa=<%# Eval("id") %>'
-                               class='<%# (bool)Eval("activa") ? "btn btn-primary btn-sm" : "btn btn-primary btn-sm disabled" %>'>
-                                Gestionar
-                            </a>
-                            <a href='FormularioMesa.aspx?id=<%# Eval("id") %>' class="btn btn-outline-secondary btn-sm">
-                                Editar
-                            </a>
+    <asp:Panel
+        ID="pnlSinMesas"
+        runat="server"
+        CssClass="alert alert-info"
+        Visible="false">
+        No hay mesas cargadas. Podes crear la primera desde "Agregar Mesa".
+    </asp:Panel>
+
+    <div class="row g-4">
+        <asp:Repeater ID="repMesas" runat="server" OnItemCommand="repMesas_ItemCommand">
+            <ItemTemplate>
+                <div class="col-md-4">
+                    <div class='<%# (bool)Eval("activa") ? "card shadow-sm h-100" : "card shadow-sm h-100 bg-light opacity-75" %>'>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <h4 class="card-title mb-0">Mesa <%# Eval("numeromesa") %></h4>
+                                <%# !(bool)Eval("activa") ? "<span class='badge bg-dark'>Inactiva</span>" : "" %>
+                            </div>
+
+                            <p>Capacidad: <%# Eval("capacidad") %> personas</p>
+                            <p>
+                                Estado:
+                                <span class='<%# ObtenerClaseBadge((Dominio.EstadoMesa)Eval("estado")) %>'>
+                                    <%# Eval("estado") %>
+                                </span>
+                            </p>
+                            <p class="text-secondary">
+                                <%# Eval("meseroasignado") != null
+                                    ? "Mesero: " + Eval("meseroasignado.nombre") + " " + Eval("meseroasignado.apellido")
+                                    : "Sin mesero asignado" %>
+                            </p>
+
+                            <div class="d-flex flex-wrap gap-2">
+                                <asp:LinkButton
+                                    ID="btnEstadoMesa"
+                                    runat="server"
+                                    CommandName="CambiarEstadoMesa"
+                                    CommandArgument='<%# Eval("id") + "," + (int)(Dominio.EstadoMesa)Eval("estado") %>'
+                                    Visible='<%# (bool)Eval("activa") && (Dominio.EstadoMesa)Eval("estado") != Dominio.EstadoMesa.Ocupada %>'
+                                    CssClass='<%# (Dominio.EstadoMesa)Eval("estado") == Dominio.EstadoMesa.Libre ? "btn btn-sm btn-outline-warning" : "btn btn-sm btn-outline-success" %>'>
+                                    <%# (Dominio.EstadoMesa)Eval("estado") == Dominio.EstadoMesa.Libre ? "Cerrar Mesa" : "Abrir Mesa" %>
+                                </asp:LinkButton>
+
+                                <a href='FormularioMesa.aspx?id=<%# Eval("id") %>' class="btn btn-sm btn-outline-primary">
+                                    Editar
+                                </a>
+
+                                <asp:LinkButton
+                                    ID="btnCambiarActiva"
+                                    runat="server"
+                                    CommandName="CambiarActiva"
+                                    CommandArgument='<%# Eval("id") + "," + Eval("activa") %>'
+                                    CssClass="btn btn-sm btn-outline-secondary">
+                                    <%# (bool)Eval("activa") ? "Dar de Baja" : "Reactivar" %>
+                                </asp:LinkButton>
+
+                                <asp:LinkButton
+                                    ID="btnEliminar"
+                                    runat="server"
+                                    CommandName="Eliminar"
+                                    CommandArgument='<%# Eval("id") %>'
+                                    CssClass="btn btn-sm btn-outline-danger"
+                                    OnClientClick="return confirm('Seguro que queres eliminar esta mesa?');">
+                                    Eliminar
+                                </asp:LinkButton>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </ItemTemplate>
-    </asp:Repeater>
-</div>
+            </ItemTemplate>
+        </asp:Repeater>
+    </div>
 
 </asp:Content>

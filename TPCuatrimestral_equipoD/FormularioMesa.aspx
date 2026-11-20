@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true" CodeBehind="FormularioMesa.aspx.cs" Inherits="TPCuatrimestral_equipoD.FormularioMesa" %>
+<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true" CodeBehind="FormularioMesa.aspx.cs" Inherits="TPCuatrimestral_equipoD.FormularioMesa" %>
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
@@ -27,6 +27,11 @@
                     <div class="mb-3">
                         <label class="form-label">Capacidad</label>
                         <asp:TextBox ID="txtCapacidad" runat="server" CssClass="form-control" TextMode="Number" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mesero Asignado</label>
+                        <asp:DropDownList ID="ddlMesero" runat="server" CssClass="form-select" />
                     </div>
 
                     <div class="form-check mb-4">
