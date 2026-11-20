@@ -118,11 +118,12 @@ namespace Negocio
             {
                 datos.setearConsulta(
                     "INSERT INTO Mesas (NumeroMesa, Capacidad, IdEstado, IdMeseroAsignado, Activa) " +
-                    "VALUES (@numero, @capacidad, @estado, NULL, 1)"
+                    "VALUES (@numero, @capacidad, @estado, NULL, @activa)"
                 );
                 datos.setearParametro("@numero", nueva.numeromesa);
                 datos.setearParametro("@capacidad", nueva.capacidad);
                 datos.setearParametro("@estado", (int)EstadoMesa.Libre);
+                datos.setearParametro("@activa", nueva.activa);
                 datos.ejecutarAccion();
             }
             catch (Exception ex)

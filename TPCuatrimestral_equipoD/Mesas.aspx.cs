@@ -22,7 +22,7 @@ namespace TPCuatrimestral_equipoD
         private void CargarMesas()
         {
             MesaNegocio negocio = new MesaNegocio();
-            repMesas.DataSource = negocio.listar(true);
+            repMesas.DataSource = negocio.listar(false);
             repMesas.DataBind();
         }
 
