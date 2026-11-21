@@ -7,96 +7,108 @@
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
-
         <div>
             <h2>Gestion de Pedidos</h2>
-            <p class="text-secondary">
-                Administracion de pedidos del restaurante
-            </p>
+            <p class="text-secondary">Administracion de pedidos del restaurante</p>
         </div>
-
-        <button type="button" class="btn btn-primary">
-            Nuevo Pedido
-        </button>
-
+        <a href="GestionPedido.aspx" class="btn btn-primary">Nuevo Pedido</a>
     </div>
 
-    <div class="card shadow-sm">
+    <asp:Label ID="lblExito" runat="server" CssClass="alert alert-success d-block" Visible="false"></asp:Label>
+    <asp:Label ID="lblError" runat="server" CssClass="alert alert-danger d-block" Visible="false"></asp:Label>
 
+    <div class="card shadow-sm">
         <div class="card-body">
 
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label class="form-label">Filtrar por estado</label>
+                    <asp:DropDownList ID="ddlFiltroEstado" runat="server" CssClass="form-select form-select-sm"
+                        AutoPostBack="true" OnSelectedIndexChanged="ddlFiltroEstado_SelectedIndexChanged">
+                        <asp:ListItem Text="Todos" Value="0" />
+                        <asp:ListItem Text="Abiertos" Value="1" />
+                        <asp:ListItem Text="Cerrados" Value="2" />
+                        <asp:ListItem Text="Cancelados" Value="3" />
+                    </asp:DropDownList>
+                </div>
+            </div>
+
             <div class="table-responsive">
+                <asp:GridView
+                    ID="dgvPedidos"
+                    runat="server"
+                    AutoGenerateColumns="false"
+                    CssClass="table table-hover align-middle"
+                    EmptyDataText="No hay pedidos registrados para el filtro seleccionado."
+                    OnRowCommand="dgvPedidos_RowCommand">
 
-                <table class="table table-hover align-middle">
+                    <Columns>
 
-                    <thead>
-                        <tr>
-                            <th>Pedido</th>
-                            <th>Mesa</th>
-                            <th>Mesero</th>
-                            <th>Apertura</th>
-                            <th>Estado</th>
-                            <th>Total</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
+                        <asp:TemplateField HeaderText="Pedido">
+                            <ItemTemplate>
+                                #<%# Eval("id") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
 
-                    <tbody>
+                        <asp:TemplateField HeaderText="Mesa">
+                            <ItemTemplate>
+                                Mesa <%# Eval("mesa.numeromesa") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
 
-                        <tr>
-                            <td>#1</td>
-                            <td>Mesa 2</td>
-                            <td>Juan Perez</td>
-                            <td>20:30</td>
+                        <asp:TemplateField HeaderText="Mesero">
+                            <ItemTemplate>
+                                <%# Eval("mesero.nombre") + " " + Eval("mesero.apellido") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
 
-                            <td>
-                                <span class="badge bg-success">
-                                    Abierto
+                        <asp:TemplateField HeaderText="Apertura">
+                            <ItemTemplate>
+                                <%# ((DateTime)Eval("fechahoraapertura")).ToString("dd/MM/yyyy HH:mm") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+
+                        <asp:TemplateField HeaderText="Estado">
+                            <ItemTemplate>
+                                <span class='<%# ObtenerClaseBadge((Dominio.EstadoPedido)Eval("estado")) %>'>
+                                    <%# Eval("estado") %>
                                 </span>
-                            </td>
+                            </ItemTemplate>
+                        </asp:TemplateField>
 
-                            <td>$ 25.000</td>
+                        <asp:TemplateField HeaderText="Total">
+                            <ItemTemplate>
+                                $ <%# ((decimal)Eval("total")).ToString("N2") %>
+                            </ItemTemplate>
+                        </asp:TemplateField>
 
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-primary">
-                                    Ver
-                                </button>
+                        <asp:TemplateField HeaderText="Acciones">
+                            <ItemTemplate>
+                                <div class="d-flex gap-2">
+                                    <a href='GestionPedido.aspx?id=<%# Eval("id") %>' class="btn btn-sm btn-outline-primary">
+                                        <%# (Dominio.EstadoPedido)Eval("estado") == Dominio.EstadoPedido.Abierto ? "Gestionar" : "Ver" %>
+                                    </a>
 
-                                <button type="button" class="btn btn-sm btn-outline-danger">
-                                    Cerrar
-                                </button>
-                            </td>
-                        </tr>
+                                    <asp:LinkButton
+                                        ID="btnCerrar"
+                                        runat="server"
+                                        CommandName="Cerrar"
+                                        CommandArgument='<%# Eval("id") %>'
+                                        Visible='<%# (Dominio.EstadoPedido)Eval("estado") == Dominio.EstadoPedido.Abierto %>'
+                                        CssClass="btn btn-sm btn-outline-danger"
+                                        OnClientClick="return confirm('Seguro que queres cerrar este pedido y liberar la mesa?');">
+                                        Cerrar
+                                    </asp:LinkButton>
+                                </div>
+                            </ItemTemplate>
+                        </asp:TemplateField>
 
-                        <tr>
-                            <td>#2</td>
-                            <td>Mesa 4</td>
-                            <td>Pedro Lopez</td>
-                            <td>19:45</td>
+                    </Columns>
 
-                            <td>
-                                <span class="badge bg-secondary">
-                                    Cerrado
-                                </span>
-                            </td>
-
-                            <td>$ 38.500</td>
-
-                            <td>
-                                <button type="button" class="btn btn-sm btn-outline-primary">
-                                    Ver
-                                </button>
-                            </td>
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
+                </asp:GridView>
             </div>
 
         </div>
-
     </div>
 
 </asp:Content>
