@@ -62,6 +62,36 @@ namespace TPCuatrimestral_equipoD
                     }
                 }
             }
+            if (e.CommandName == "Cancelar")
+            {
+                int idPedido;
+
+                if (int.TryParse(
+                    e.CommandArgument.ToString(),
+                    out idPedido))
+                {
+                    try
+                    {
+                        PedidoNegocio negocio =
+                            new PedidoNegocio();
+
+                        negocio.cancelarPedido(idPedido);
+
+                        CargarPedidos();
+
+                        lblExito.Text =
+                            "Pedido #" + idPedido +
+                            " cancelado correctamente.";
+
+                        lblExito.Visible = true;
+                    }
+                    catch (Exception ex)
+                    {
+                        lblError.Text = ex.Message;
+                        lblError.Visible = true;
+                    }
+                }
+            }
         }
 
         protected string ObtenerClaseBadge(EstadoPedido estado)

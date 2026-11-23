@@ -11,29 +11,58 @@
             <h2>Gestion de Pedidos</h2>
             <p class="text-secondary">Administracion de pedidos del restaurante</p>
         </div>
-        <a href="GestionPedido.aspx" class="btn btn-primary">Nuevo Pedido</a>
+
+        <a href="GestionDePedidos.aspx" class="btn btn-primary">
+            Nuevo Pedido
+        </a>
     </div>
 
-    <asp:Label ID="lblExito" runat="server" CssClass="alert alert-success d-block" Visible="false"></asp:Label>
-    <asp:Label ID="lblError" runat="server" CssClass="alert alert-danger d-block" Visible="false"></asp:Label>
+    <asp:Label
+        ID="lblExito"
+        runat="server"
+        CssClass="alert alert-success d-block"
+        Visible="false">
+    </asp:Label>
+
+    <asp:Label
+        ID="lblError"
+        runat="server"
+        CssClass="alert alert-danger d-block"
+        Visible="false">
+    </asp:Label>
 
     <div class="card shadow-sm">
+
         <div class="card-body">
 
             <div class="row mb-3">
+
                 <div class="col-md-3">
-                    <label class="form-label">Filtrar por estado</label>
-                    <asp:DropDownList ID="ddlFiltroEstado" runat="server" CssClass="form-select form-select-sm"
-                        AutoPostBack="true" OnSelectedIndexChanged="ddlFiltroEstado_SelectedIndexChanged">
+
+                    <label class="form-label">
+                        Filtrar por estado
+                    </label>
+
+                    <asp:DropDownList
+                        ID="ddlFiltroEstado"
+                        runat="server"
+                        CssClass="form-select form-select-sm"
+                        AutoPostBack="true"
+                        OnSelectedIndexChanged="ddlFiltroEstado_SelectedIndexChanged">
+
                         <asp:ListItem Text="Todos" Value="0" />
                         <asp:ListItem Text="Abiertos" Value="1" />
                         <asp:ListItem Text="Cerrados" Value="2" />
                         <asp:ListItem Text="Cancelados" Value="3" />
+
                     </asp:DropDownList>
+
                 </div>
+
             </div>
 
             <div class="table-responsive">
+
                 <asp:GridView
                     ID="dgvPedidos"
                     runat="server"
@@ -70,9 +99,11 @@
 
                         <asp:TemplateField HeaderText="Estado">
                             <ItemTemplate>
+
                                 <span class='<%# ObtenerClaseBadge((Dominio.EstadoPedido)Eval("estado")) %>'>
                                     <%# Eval("estado") %>
                                 </span>
+
                             </ItemTemplate>
                         </asp:TemplateField>
 
@@ -83,11 +114,20 @@
                         </asp:TemplateField>
 
                         <asp:TemplateField HeaderText="Acciones">
+
                             <ItemTemplate>
+
                                 <div class="d-flex gap-2">
-                                    <a href='GestionPedido.aspx?id=<%# Eval("id") %>' class="btn btn-sm btn-outline-primary">
-                                        <%# (Dominio.EstadoPedido)Eval("estado") == Dominio.EstadoPedido.Abierto ? "Gestionar" : "Ver" %>
+
+                                    <a href='GestionDePedidos.aspx?id=<%# Eval("id") %>'
+                                        class="btn btn-sm btn-outline-primary">
+
+                                        <%# (Dominio.EstadoPedido)Eval("estado") == Dominio.EstadoPedido.Abierto
+                                            ? "Gestionar"
+                                            : "Ver" %>
+
                                     </a>
+
 
                                     <asp:LinkButton
                                         ID="btnCerrar"
@@ -97,18 +137,39 @@
                                         Visible='<%# (Dominio.EstadoPedido)Eval("estado") == Dominio.EstadoPedido.Abierto %>'
                                         CssClass="btn btn-sm btn-outline-danger"
                                         OnClientClick="return confirm('Seguro que queres cerrar este pedido y liberar la mesa?');">
+
                                         Cerrar
+
                                     </asp:LinkButton>
+
+
+                                    <asp:LinkButton
+                                        ID="btnCancelar"
+                                        runat="server"
+                                        CommandName="Cancelar"
+                                        CommandArgument='<%# Eval("id") %>'
+                                        Visible='<%# (Dominio.EstadoPedido)Eval("estado") == Dominio.EstadoPedido.Abierto %>'
+                                        CssClass="btn btn-sm btn-outline-warning"
+                                        OnClientClick="return confirm('Seguro que queres cancelar este pedido?');">
+
+                                        Cancelar
+
+                                    </asp:LinkButton>
+
                                 </div>
+
                             </ItemTemplate>
+
                         </asp:TemplateField>
 
                     </Columns>
 
                 </asp:GridView>
+
             </div>
 
         </div>
+
     </div>
 
 </asp:Content>
