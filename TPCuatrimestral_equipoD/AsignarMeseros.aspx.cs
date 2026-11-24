@@ -77,15 +77,33 @@ namespace TPCuatrimestral_equipoD
                     HiddenField hfIdMesa = (HiddenField)row.FindControl("hfIdMesa");
                     DropDownList ddlMesero = (DropDownList)row.FindControl("ddlMesero");
 
-                    if (hfIdMesa != null && ddlMesero != null)
+                    int idMesa;
+                    int idMesero;
+                    if (hfIdMesa != null && ddlMesero != null && int.TryParse(hfIdMesa.Value, out idMesa))
                     {
-                        int idMesa;
-                        int idMesero;
-                        if (int.TryParse(hfIdMesa.Value, out idMesa))
+                        int.TryParse(ddlMesero.SelectedValue, out idMesero);
+                        Mesa mesa = mesaNegocio.buscarPorId(idMesa);
+                        if (mesa != null && mesa.estado == EstadoMesa.Ocupada && idMesero <= 0)
                         {
-                            int.TryParse(ddlMesero.SelectedValue, out idMesero);
-                            mesaNegocio.asignarMesero(idMesa, idMesero > 0 ? (int?)idMesero : null);
+                            lblError.Text = "La Mesa " + mesa.numeromesa + " esta ocupada y no puede quedar sin mesero asignado.";
+                            lblError.Visible = true;
+                            return;
                         }
+                    }
+
+                }
+
+                foreach (GridViewRow row in dgvAsignaciones.Rows)
+                {
+                    HiddenField hfIdMesa = (HiddenField)row.FindControl("hfIdMesa");
+                    DropDownList ddlMesero = (DropDownList)row.FindControl("ddlMesero");
+
+                    int idMesa;
+                    int idMesero;
+                    if (hfIdMesa != null && ddlMesero != null && int.TryParse(hfIdMesa.Value, out idMesa))
+                    {
+                        int.TryParse(ddlMesero.SelectedValue, out idMesero);
+                        mesaNegocio.asignarMesero(idMesa, idMesero > 0 ? (int?)idMesero : null);
                     }
                 }
 

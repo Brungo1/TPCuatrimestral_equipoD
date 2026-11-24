@@ -36,22 +36,27 @@ namespace TPCuatrimestral_equipoD
             InsumoNegocio negocio = new InsumoNegocio();
             Insumo insumo = negocio.buscarPorId(id);
 
-            if (insumo != null)
+            if (insumo == null)
             {
-                txtNombre.Text = insumo.nombre;
-                txtDescripcion.Text = insumo.descripcion;
-
-                string idCatStr = insumo.categoria.id.ToString();
-                if (ddlCategoria.Items.FindByValue(idCatStr) == null)
-                {
-                    ddlCategoria.Items.Add(new ListItem(insumo.categoria.descripcion, idCatStr));
-                }
-                ddlCategoria.SelectedValue = idCatStr;
-
-                txtPrecio.Text = insumo.precio.ToString("0.00", CultureInfo.InvariantCulture);
-                txtStock.Text = insumo.stockactual.ToString();
-                chkActivo.Checked = insumo.activo;
+                Response.Redirect("Insumos.aspx", false);
+                return;
             }
+
+           
+            txtNombre.Text = insumo.nombre;
+            txtDescripcion.Text = insumo.descripcion;
+
+            string idCatStr = insumo.categoria.id.ToString();
+            if (ddlCategoria.Items.FindByValue(idCatStr) == null)
+            {
+                ddlCategoria.Items.Add(new ListItem(insumo.categoria.descripcion, idCatStr));
+            }
+            ddlCategoria.SelectedValue = idCatStr;
+
+            txtPrecio.Text = insumo.precio.ToString("0.00", CultureInfo.InvariantCulture);
+            txtStock.Text = insumo.stockactual.ToString();
+            chkActivo.Checked = insumo.activo;
+            
         }
 
         protected void btnGuardar_Click(object sender, EventArgs e)

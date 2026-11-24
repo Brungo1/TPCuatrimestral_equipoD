@@ -2,8 +2,8 @@
 GO*/
 
 USE RESTO_DB;
-select * from Mesas
-/*
+select * from Usuarios
+
 CREATE TABLE CategoriasInsumo (
     Id INT IDENTITY(1,1) PRIMARY KEY,
     Descripcion VARCHAR(100) NOT NULL,

@@ -113,7 +113,10 @@ namespace TPCuatrimestral_equipoD
                     return;
                 }
 
-                if (id > 0 && !chkActiva.Checked)
+                int idMesero;
+                int.TryParse(ddlMesero.SelectedValue, out idMesero);
+
+                if (id > 0)
                 {
                     Mesa mesaActual = negocio.buscarPorId(id);
                     if (mesaActual == null)
@@ -122,9 +125,16 @@ namespace TPCuatrimestral_equipoD
                         return;
                     }
 
-                    if (mesaActual.estado == EstadoMesa.Ocupada)
+                    if (!chkActiva.Checked && mesaActual.estado == EstadoMesa.Ocupada)
                     {
                         lblMensaje.Text = "No se puede desactivar una mesa que esta ocupada.";
+                        lblMensaje.Visible = true;
+                        return;
+                    }
+
+                    if (mesaActual.estado == EstadoMesa.Ocupada && idMesero <= 0)
+                    {
+                        lblMensaje.Text = "Una mesa ocupada no puede quedar sin mesero asignado.";
                         lblMensaje.Visible = true;
                         return;
                     }
@@ -136,8 +146,7 @@ namespace TPCuatrimestral_equipoD
                 mesa.capacidad = capacidad;
                 mesa.activa = chkActiva.Checked;
 
-                int idMesero;
-                if (int.TryParse(ddlMesero.SelectedValue, out idMesero) && idMesero > 0)
+                if (idMesero > 0)
                     mesa.meseroasignado = new Usuario { id = idMesero };
                 else
                     mesa.meseroasignado = null;
