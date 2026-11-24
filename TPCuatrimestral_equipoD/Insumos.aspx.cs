@@ -8,6 +8,8 @@ namespace TPCuatrimestral_equipoD
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!Seguridad.ValidarAcceso(this, true)) return;
+
             if (!IsPostBack)
             {
                 CargarInsumos();

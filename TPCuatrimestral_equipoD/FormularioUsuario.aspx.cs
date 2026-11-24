@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Dominio;
 using Negocio;
 
@@ -8,6 +8,8 @@ namespace TPCuatrimestral_equipoD
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!Seguridad.ValidarAcceso(this, true)) return;
+
             if (!IsPostBack)
             {
                 if (Request.QueryString["id"] != null)
@@ -78,7 +80,7 @@ namespace TPCuatrimestral_equipoD
                 {
                     if (txtContrasenia.Text == "")
                     {
-                        lblError.Text = "Ingrese una contraseña.";
+                        lblError.Text = "Ingrese una contrase\u00f1a.";
                         lblError.Visible = true;
                         return;
                     }

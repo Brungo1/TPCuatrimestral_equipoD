@@ -12,6 +12,8 @@ namespace TPCuatrimestral_equipoD
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!Seguridad.ValidarAcceso(this, true)) return;
+
             if (!IsPostBack)
             {
                 CargarAsignaciones();
@@ -65,7 +67,6 @@ namespace TPCuatrimestral_equipoD
 
         protected void btnGuardarAsignaciones_Click(object sender, EventArgs e)
         {
-            lblExito.Visible = false;
             lblError.Visible = false;
 
             try
@@ -108,8 +109,6 @@ namespace TPCuatrimestral_equipoD
                 }
 
                 CargarAsignaciones();
-                lblExito.Text = "Asignaciones guardadas correctamente.";
-                lblExito.Visible = true;
             }
             catch (Exception ex)
             {
@@ -120,7 +119,6 @@ namespace TPCuatrimestral_equipoD
 
         protected void btnLimpiarAsignaciones_Click(object sender, EventArgs e)
         {
-            lblExito.Visible = false;
             lblError.Visible = false;
 
             try
@@ -129,8 +127,6 @@ namespace TPCuatrimestral_equipoD
                 mesaNegocio.limpiarAsignacionesMesasNoOcupadas();
 
                 CargarAsignaciones();
-                lblExito.Text = "Se limpiaron las asignaciones de las mesas no ocupadas.";
-                lblExito.Visible = true;
             }
             catch (Exception ex)
             {

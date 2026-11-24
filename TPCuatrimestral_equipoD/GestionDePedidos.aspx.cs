@@ -1,6 +1,7 @@
-﻿using Dominio;
+using Dominio;
 using Negocio;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.UI.WebControls;
 
@@ -9,41 +10,98 @@ namespace TPCuatrimestral_equipoD
     public partial class GestionDePedidos : System.Web.UI.Page
     {
         protected bool EsPedidoAbierto { get; set; }
-      
+        protected bool PuedeQuitarInsumo { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!Seguridad.ValidarAcceso(this)) return;
+
             if (!IsPostBack)
             {
                 int idPedido;
+                int idMesa;
 
                 if (int.TryParse(Request.QueryString["id"], out idPedido))
                 {
                     cargarPedido(idPedido);
                 }
+                else if (int.TryParse(Request.QueryString["idMesa"], out idMesa))
+                {
+                    manejarAccesoPorMesa(idMesa);
+                }
                 else
                 {
-                    prepararNuevoPedido();
+                    prepararNuevoPedido(0);
                 }
             }
         }
 
-        private void prepararNuevoPedido()
+        private void manejarAccesoPorMesa(int idMesa)
+        {
+            MesaNegocio mesaNegocio = new MesaNegocio();
+            Mesa mesa = mesaNegocio.buscarPorId(idMesa);
+
+            if (mesa == null || !mesa.activa)
+            {
+                Response.Redirect("Mesas.aspx", false);
+                return;
+            }
+
+            if (!Seguridad.EsGerente(Session))
+            {
+                Usuario usuario = Seguridad.ObtenerUsuario(Session);
+                if (usuario == null || mesa.meseroasignado == null || mesa.meseroasignado.id != usuario.id)
+                {
+                    Response.Redirect("Mesas.aspx", false);
+                    return;
+                }
+            }
+
+            PedidoNegocio pedidoNegocio = new PedidoNegocio();
+            Pedido abierto = pedidoNegocio.buscarAbiertoPorMesa(idMesa);
+            if (abierto != null)
+            {
+                Response.Redirect("GestionDePedidos.aspx?id=" + abierto.id, false);
+                return;
+            }
+
+            if (mesa.estado == EstadoMesa.Libre)
+            {
+                prepararNuevoPedido(idMesa);
+            }
+            else
+            {
+                Response.Redirect("Mesas.aspx", false);
+            }
+        }
+
+        private void prepararNuevoPedido(int idMesaPreseleccionada = 0)
         {
             pnlNuevoPedido.Visible = true;
             pnlPedido.Visible = false;
 
-            cargarMesas();
-            cargarMeseros();
+            cargarMesas(idMesaPreseleccionada);
+            cargarMeseros(idMesaPreseleccionada);
         }
 
-        private void cargarMesas()
+        private void cargarMesas(int idMesaPreseleccionada = 0)
         {
             MesaNegocio negocio = new MesaNegocio();
+            List<Mesa> mesas;
 
-            var mesas = negocio.listar(true)
-                .Where(x => x.estado == EstadoMesa.Libre)
-                .ToList();
+            if (Seguridad.EsGerente(Session))
+            {
+                mesas = negocio.listar(true)
+                    .Where(x => x.estado == EstadoMesa.Libre)
+                    .ToList();
+            }
+            else
+            {
+                Usuario usuario = Seguridad.ObtenerUsuario(Session);
+                mesas = negocio.listarPorMesero(usuario.id)
+                    .Where(x => x.estado == EstadoMesa.Libre)
+                    .ToList();
+            }
 
             ddlMesa.Items.Clear();
 
@@ -61,28 +119,62 @@ namespace TPCuatrimestral_equipoD
                     )
                 );
             }
+
+            if (idMesaPreseleccionada > 0 && ddlMesa.Items.FindByValue(idMesaPreseleccionada.ToString()) != null)
+            {
+                ddlMesa.SelectedValue = idMesaPreseleccionada.ToString();
+            }
         }
 
-        private void cargarMeseros()
+        private void cargarMeseros(int idMesaPreseleccionada = 0)
         {
-            UsuarioNegocio negocio = new UsuarioNegocio();
-
-            var meseros = negocio.listarMeserosActivos();
-
             ddlMesero.Items.Clear();
 
-            ddlMesero.Items.Add(
-                new ListItem("Seleccione un mesero", "0")
-            );
-
-            foreach (Usuario mesero in meseros)
+            if (Seguridad.EsGerente(Session))
             {
+                ddlMesero.Enabled = true;
+
+                UsuarioNegocio negocio = new UsuarioNegocio();
+                var meseros = negocio.listarMeserosActivos();
+
+                ddlMesero.Items.Add(
+                    new ListItem("Seleccione un mesero", "0")
+                );
+
+                foreach (Usuario mesero in meseros)
+                {
+                    ddlMesero.Items.Add(
+                        new ListItem(
+                            mesero.nombre + " " + mesero.apellido,
+                            mesero.id.ToString()
+                        )
+                    );
+                }
+
+                if (idMesaPreseleccionada > 0)
+                {
+                    Mesa mesa = new MesaNegocio().buscarPorId(idMesaPreseleccionada);
+                    if (mesa != null && mesa.meseroasignado != null)
+                    {
+                        string idMeseroStr = mesa.meseroasignado.id.ToString();
+                        if (ddlMesero.Items.FindByValue(idMeseroStr) != null)
+                        {
+                            ddlMesero.SelectedValue = idMeseroStr;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                Usuario usuario = Seguridad.ObtenerUsuario(Session);
                 ddlMesero.Items.Add(
                     new ListItem(
-                        mesero.nombre + " " + mesero.apellido,
-                        mesero.id.ToString()
+                        usuario.nombre + " " + usuario.apellido,
+                        usuario.id.ToString()
                     )
                 );
+                ddlMesero.SelectedValue = usuario.id.ToString();
+                ddlMesero.Enabled = false;
             }
         }
 
@@ -113,6 +205,28 @@ namespace TPCuatrimestral_equipoD
             }
         }
 
+        private bool mesaAsignadaAlMesero(int idMesa, int idMesero)
+        {
+            Mesa mesa = new MesaNegocio().buscarPorId(idMesa);
+            return mesa != null && mesa.meseroasignado != null && mesa.meseroasignado.id == idMesero;
+        }
+
+        private bool puedeAccederPedido(Pedido pedido)
+        {
+            if (Seguridad.EsGerente(Session))
+                return true;
+
+            if (pedido == null)
+                return false;
+
+            Usuario usuario = Seguridad.ObtenerUsuario(Session);
+            if (usuario == null)
+                return false;
+
+            return (pedido.mesero != null && pedido.mesero.id == usuario.id) ||
+                   (pedido.mesa != null && mesaAsignadaAlMesero(pedido.mesa.id, usuario.id));
+        }
+
         protected void btnAbrirPedido_Click(object sender, EventArgs e)
         {
             ocultarMensajes();
@@ -128,10 +242,26 @@ namespace TPCuatrimestral_equipoD
                     return;
                 }
 
-                if (!int.TryParse(ddlMesero.SelectedValue, out idMesero) || idMesero == 0)
+                if (!Seguridad.EsGerente(Session))
                 {
-                    mostrarError("Seleccione un mesero.");
-                    return;
+                    Usuario usuario = Seguridad.ObtenerUsuario(Session);
+                    idMesero = usuario.id;
+
+                    Mesa mesa = new MesaNegocio().buscarPorId(idMesa);
+                    if (mesa == null || !mesa.activa || mesa.estado != EstadoMesa.Libre ||
+                        mesa.meseroasignado == null || mesa.meseroasignado.id != usuario.id)
+                    {
+                        mostrarError("No tenes permiso para abrir un pedido en esa mesa.");
+                        return;
+                    }
+                }
+                else
+                {
+                    if (!int.TryParse(ddlMesero.SelectedValue, out idMesero) || idMesero == 0)
+                    {
+                        mostrarError("Seleccione un mesero.");
+                        return;
+                    }
                 }
 
                 PedidoNegocio negocio = new PedidoNegocio();
@@ -167,53 +297,41 @@ namespace TPCuatrimestral_equipoD
                 return;
             }
 
+            if (!puedeAccederPedido(pedido))
+            {
+                Response.Redirect("Mesas.aspx", false);
+                return;
+            }
+
             pnlNuevoPedido.Visible = false;
             pnlPedido.Visible = true;
 
-            lblNumeroPedido.Text =
-                "#" + pedido.id;
-
-            lblMesa.Text =
-                "Mesa " + pedido.mesa.numeromesa;
-
-            lblMesero.Text =
-                pedido.mesero.nombre + " " +
-                pedido.mesero.apellido;
-
-            lblEstado.Text =
-                pedido.estado.ToString();
-
-            lblApertura.Text =
-                pedido.fechahoraapertura
-                    .ToString("dd/MM/yyyy HH:mm");
+            lblNumeroPedido.Text = "#" + pedido.id;
+            lblMesa.Text = "Mesa " + pedido.mesa.numeromesa;
+            lblMesero.Text = pedido.mesero.nombre + " " + pedido.mesero.apellido;
+            lblEstado.Text = pedido.estado.ToString();
+            lblApertura.Text = pedido.fechahoraapertura.ToString("dd/MM/yyyy HH:mm");
 
             if (pedido.fechahoracierre.HasValue)
             {
-                lblCierre.Text =
-                    pedido.fechahoracierre.Value
-                        .ToString("dd/MM/yyyy HH:mm");
+                lblCierre.Text = pedido.fechahoracierre.Value.ToString("dd/MM/yyyy HH:mm");
             }
             else
             {
                 lblCierre.Text = "-";
             }
 
-            EsPedidoAbierto =
-                pedido.estado == EstadoPedido.Abierto;
+            EsPedidoAbierto = pedido.estado == EstadoPedido.Abierto;
+            PuedeQuitarInsumo = EsPedidoAbierto || (pedido.estado == EstadoPedido.Cerrado && Seguridad.EsGerente(Session));
 
-            pnlAgregarInsumo.Visible =
-                EsPedidoAbierto;
+            pnlAgregarInsumo.Visible = EsPedidoAbierto;
+            pnlAcciones.Visible = EsPedidoAbierto;
 
-            pnlAcciones.Visible =
-                EsPedidoAbierto;
-
-            dgvDetalle.DataSource =
-                pedido.items;
-
+            dgvDetalle.Columns[4].Visible = PuedeQuitarInsumo;
+            dgvDetalle.DataSource = pedido.items;
             dgvDetalle.DataBind();
 
-            lblTotal.Text =
-                "$ " + pedido.total.ToString("N2");
+            lblTotal.Text = "$ " + pedido.total.ToString("N2");
 
             if (EsPedidoAbierto)
             {
@@ -237,6 +355,14 @@ namespace TPCuatrimestral_equipoD
                     return;
                 }
 
+                PedidoNegocio negocio = new PedidoNegocio();
+                Pedido pedido = negocio.buscarPorId(idPedido);
+                if (!puedeAccederPedido(pedido))
+                {
+                    mostrarError("No tenes permiso para modificar este pedido.");
+                    return;
+                }
+
                 if (!int.TryParse(ddlInsumo.SelectedValue, out idInsumo) || idInsumo == 0)
                 {
                     mostrarError("Seleccione un insumo.");
@@ -249,21 +375,11 @@ namespace TPCuatrimestral_equipoD
                     return;
                 }
 
-                PedidoNegocio negocio = new PedidoNegocio();
-
-                negocio.agregarDetalle(
-                    idPedido,
-                    idInsumo,
-                    cantidad
-                );
+                negocio.agregarDetalle(idPedido, idInsumo, cantidad);
 
                 txtCantidad.Text = "1";
 
                 cargarPedido(idPedido);
-
-                mostrarExito(
-                    "Insumo agregado correctamente."
-                );
             }
             catch (Exception ex)
             {
@@ -271,9 +387,7 @@ namespace TPCuatrimestral_equipoD
             }
         }
 
-        protected void dgvDetalle_Accion(
-            object sender,
-            GridViewCommandEventArgs e)
+        protected void dgvDetalle_Accion(object sender, GridViewCommandEventArgs e)
         {
             ocultarMensajes();
 
@@ -281,26 +395,33 @@ namespace TPCuatrimestral_equipoD
             {
                 try
                 {
-                    int idDetalle =
-                        int.Parse(
-                            e.CommandArgument.ToString()
-                        );
+                    int idPedido;
+                    if (!int.TryParse(Request.QueryString["id"], out idPedido))
+                    {
+                        mostrarError("Pedido invalido.");
+                        return;
+                    }
 
-                    PedidoNegocio negocio =
-                        new PedidoNegocio();
+                    PedidoNegocio negocio = new PedidoNegocio();
+                    Pedido pedido = negocio.buscarPorId(idPedido);
+                    if (!puedeAccederPedido(pedido))
+                    {
+                        mostrarError("No tenes permiso para modificar este pedido.");
+                        return;
+                    }
 
-                    negocio.eliminarDetalle(idDetalle);
+                    bool esGerente = Seguridad.EsGerente(Session);
+                    if (pedido.estado == EstadoPedido.Cancelado || (!esGerente && pedido.estado != EstadoPedido.Abierto))
+                    {
+                        mostrarError("No tenes permiso para quitar insumos de este pedido.");
+                        return;
+                    }
 
-                    int idPedido =
-                        int.Parse(
-                            Request.QueryString["id"]
-                        );
+                    int idDetalle = int.Parse(e.CommandArgument.ToString());
+
+                    negocio.eliminarDetalle(idDetalle, esGerente);
 
                     cargarPedido(idPedido);
-
-                    mostrarExito(
-                        "Insumo eliminado del pedido."
-                    );
                 }
                 catch (Exception ex)
                 {
@@ -323,15 +444,17 @@ namespace TPCuatrimestral_equipoD
                     return;
                 }
 
-                PedidoNegocio negocio =
-                    new PedidoNegocio();
+                PedidoNegocio negocio = new PedidoNegocio();
+                Pedido pedido = negocio.buscarPorId(idPedido);
+                if (!puedeAccederPedido(pedido))
+                {
+                    mostrarError("No tenes permiso para modificar este pedido.");
+                    return;
+                }
 
                 negocio.cerrarPedido(idPedido);
 
-                Response.Redirect(
-                    "Pedidos.aspx",
-                    false
-                );
+                Response.Redirect("Pedidos.aspx", false);
 
                 return;
             }
@@ -355,15 +478,17 @@ namespace TPCuatrimestral_equipoD
                     return;
                 }
 
-                PedidoNegocio negocio =
-                    new PedidoNegocio();
+                PedidoNegocio negocio = new PedidoNegocio();
+                Pedido pedido = negocio.buscarPorId(idPedido);
+                if (!puedeAccederPedido(pedido))
+                {
+                    mostrarError("No tenes permiso para modificar este pedido.");
+                    return;
+                }
 
                 negocio.cancelarPedido(idPedido);
 
-                Response.Redirect(
-                    "Pedidos.aspx",
-                    false
-                );
+                Response.Redirect("Pedidos.aspx", false);
 
                 return;
             }
@@ -377,22 +502,11 @@ namespace TPCuatrimestral_equipoD
         {
             lblError.Text = mensaje;
             lblError.Visible = true;
-
-            lblExito.Visible = false;
-        }
-
-        private void mostrarExito(string mensaje)
-        {
-            lblExito.Text = mensaje;
-            lblExito.Visible = true;
-
-            lblError.Visible = false;
         }
 
         private void ocultarMensajes()
         {
             lblError.Visible = false;
-            lblExito.Visible = false;
         }
     }
 }

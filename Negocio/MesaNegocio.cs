@@ -316,5 +316,55 @@ namespace Negocio
                 datos.cerrarConexion();
             }
         }
+
+        public List<Mesa> listarPorMesero(int idMesero)
+        {
+            List<Mesa> lista = new List<Mesa>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(
+                    "SELECT M.Id, M.NumeroMesa, M.Capacidad, M.IdEstado, M.IdMeseroAsignado, M.Activa, " +
+                    "U.Nombre, U.Apellido " +
+                    "FROM Mesas M " +
+                    "LEFT JOIN Usuarios U ON M.IdMeseroAsignado = U.Id " +
+                    "WHERE M.Activa = 1 AND M.IdMeseroAsignado = @idMesero " +
+                    "ORDER BY M.NumeroMesa ASC"
+                );
+                datos.setearParametro("@idMesero", idMesero);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Mesa aux = new Mesa();
+                    aux.id = (int)datos.Lector["Id"];
+                    aux.numeromesa = (int)datos.Lector["NumeroMesa"];
+                    aux.capacidad = (int)datos.Lector["Capacidad"];
+                    aux.estado = (EstadoMesa)(int)datos.Lector["IdEstado"];
+                    aux.activa = (bool)datos.Lector["Activa"];
+
+                    if (!(datos.Lector["IdMeseroAsignado"] is DBNull))
+                    {
+                        aux.meseroasignado = new Usuario();
+                        aux.meseroasignado.id = (int)datos.Lector["IdMeseroAsignado"];
+                        aux.meseroasignado.nombre = (string)datos.Lector["Nombre"];
+                        aux.meseroasignado.apellido = (string)datos.Lector["Apellido"];
+                    }
+
+                    lista.Add(aux);
+                }
+
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }

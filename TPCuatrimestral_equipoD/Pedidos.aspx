@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true"
+<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true"
     CodeBehind="Pedidos.aspx.cs" Inherits="TPCuatrimestral_equipoD.Pedidos" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
@@ -16,13 +16,6 @@
             Nuevo Pedido
         </a>
     </div>
-
-    <asp:Label
-        ID="lblExito"
-        runat="server"
-        CssClass="alert alert-success d-block"
-        Visible="false">
-    </asp:Label>
 
     <asp:Label
         ID="lblError"

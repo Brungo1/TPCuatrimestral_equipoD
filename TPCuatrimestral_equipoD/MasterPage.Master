@@ -1,4 +1,4 @@
-﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MasterPage.Master.cs" Inherits="TPCuatrimestral_equipoD.MasterPage" %><!DOCTYPE html>
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="MasterPage.Master.cs" Inherits="TPCuatrimestral_equipoD.MasterPage" %><!DOCTYPE html>
 
 <html>
 <head runat="server">
@@ -41,22 +41,27 @@
                         <a class="nav-link" href="Mesas.aspx">Mesas</a>
                     </li>
 
-                    <li class="nav-item">
+                    <li class="nav-item" id="liInsumos" runat="server">
                         <a class="nav-link" href="Insumos.aspx">Insumos</a>
                     </li>
                     <li class="nav-item">
-    <a class="nav-link" href="Pedidos.aspx">Pedidos</a>
-</li>
+                        <a class="nav-link" href="Pedidos.aspx">Pedidos</a>
+                    </li>
 
-<li class="nav-item">
-    <a class="nav-link" href="Usuarios.aspx">Usuarios</a>
-</li>
+                    <li class="nav-item" id="liUsuarios" runat="server">
+                        <a class="nav-link" href="Usuarios.aspx">Usuarios</a>
+                    </li>
 
-<li class="nav-item">
-    <a class="nav-link" href="Reportes.aspx">Reportes</a>
-</li>
+                    <li class="nav-item" id="liReportes" runat="server">
+                        <a class="nav-link" href="Reportes.aspx">Reportes</a>
+                    </li>
 
                 </ul>
+
+                <div class="d-flex align-items-center">
+                    <asp:Label ID="lblUsuario" runat="server" CssClass="navbar-text me-3 fw-semibold" />
+                    <asp:LinkButton ID="btnCerrarSesion" runat="server" CssClass="btn btn-outline-danger btn-sm" OnClick="btnCerrarSesion_Click">Cerrar Sesion</asp:LinkButton>
+                </div>
 
             </div>
 

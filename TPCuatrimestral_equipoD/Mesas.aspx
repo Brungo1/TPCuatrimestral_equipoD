@@ -11,7 +11,7 @@
             <h2>Gestion de Mesas</h2>
             <p class="text-secondary">Estado actual y administracion de las mesas del restaurante</p>
         </div>
-        <div>
+        <div id="divAccionesGerente" runat="server">
             <a href="AsignarMeseros.aspx" class="btn btn-outline-primary me-2">Asignar Meseros</a>
             <a href="FormularioMesa.aspx" class="btn btn-primary">Agregar Mesa</a>
         </div>
@@ -29,7 +29,7 @@
         runat="server"
         CssClass="alert alert-info"
         Visible="false">
-        No hay mesas cargadas. Podes crear la primera desde "Agregar Mesa".
+        <asp:Label ID="lblSinMesas" runat="server" />
     </asp:Panel>
 
     <div class="row g-4">
@@ -57,25 +57,38 @@
                             </p>
 
                             <div class="d-flex flex-wrap gap-2">
+                                <asp:HyperLink
+                                    ID="hlPedido"
+                                    runat="server"
+                                    NavigateUrl='<%# "GestionDePedidos.aspx?idMesa=" + Eval("id") %>'
+                                    Visible='<%# (bool)Eval("activa") && (Dominio.EstadoMesa)Eval("estado") != Dominio.EstadoMesa.Cerrada %>'
+                                    CssClass='<%# (Dominio.EstadoMesa)Eval("estado") == Dominio.EstadoMesa.Ocupada ? "btn btn-sm btn-danger" : "btn btn-sm btn-success" %>'
+                                    Text='<%# (Dominio.EstadoMesa)Eval("estado") == Dominio.EstadoMesa.Ocupada ? "Gestionar Pedido" : "Abrir Pedido" %>' />
+
                                 <asp:LinkButton
                                     ID="btnEstadoMesa"
                                     runat="server"
                                     CommandName="CambiarEstadoMesa"
                                     CommandArgument='<%# Eval("id") + "," + (int)(Dominio.EstadoMesa)Eval("estado") %>'
-                                    Visible='<%# (bool)Eval("activa") && (Dominio.EstadoMesa)Eval("estado") != Dominio.EstadoMesa.Ocupada %>'
+                                    Visible='<%# EsGerente && (bool)Eval("activa") && (Dominio.EstadoMesa)Eval("estado") != Dominio.EstadoMesa.Ocupada %>'
                                     CssClass='<%# (Dominio.EstadoMesa)Eval("estado") == Dominio.EstadoMesa.Libre ? "btn btn-sm btn-outline-warning" : "btn btn-sm btn-outline-success" %>'>
                                     <%# (Dominio.EstadoMesa)Eval("estado") == Dominio.EstadoMesa.Libre ? "Cerrar Mesa" : "Abrir Mesa" %>
                                 </asp:LinkButton>
 
-                                <a href='FormularioMesa.aspx?id=<%# Eval("id") %>' class="btn btn-sm btn-outline-primary">
-                                    Editar
-                                </a>
+                                <asp:HyperLink
+                                    ID="hlEditar"
+                                    runat="server"
+                                    NavigateUrl='<%# "FormularioMesa.aspx?id=" + Eval("id") %>'
+                                    Visible='<%# EsGerente %>'
+                                    CssClass="btn btn-sm btn-outline-primary"
+                                    Text="Editar" />
 
                                 <asp:LinkButton
                                     ID="btnCambiarActiva"
                                     runat="server"
                                     CommandName="CambiarActiva"
                                     CommandArgument='<%# Eval("id") + "," + Eval("activa") %>'
+                                    Visible='<%# EsGerente %>'
                                     CssClass="btn btn-sm btn-outline-secondary">
                                     <%# (bool)Eval("activa") ? "Dar de Baja" : "Reactivar" %>
                                 </asp:LinkButton>
@@ -85,6 +98,7 @@
                                     runat="server"
                                     CommandName="Eliminar"
                                     CommandArgument='<%# Eval("id") %>'
+                                    Visible='<%# EsGerente %>'
                                     CssClass="btn btn-sm btn-outline-danger"
                                     OnClientClick="return confirm('Seguro que queres eliminar esta mesa?');">
                                     Eliminar

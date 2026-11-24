@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // <generado automáticamente>
 //     Este código fue generado por una herramienta.
 //
@@ -31,6 +31,31 @@ namespace TPCuatrimestral_equipoD
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+
+        /// <summary>
+        /// Control liInsumos.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liInsumos;
+
+        /// <summary>
+        /// Control liUsuarios.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liUsuarios;
+
+        /// <summary>
+        /// Control liReportes.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl liReportes;
+
+        /// <summary>
+        /// Control lblUsuario.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblUsuario;
+
+        /// <summary>
+        /// Control btnCerrarSesion.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.LinkButton btnCerrarSesion;
 
         /// <summary>
         /// Control ContentPlaceHolder1.

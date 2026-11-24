@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true"
+<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master" AutoEventWireup="true"
     CodeBehind="Default.aspx.cs" Inherits="TPCuatrimestral_equipoD.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
@@ -36,7 +36,7 @@
         </div>
 
 
-        <div class="col-md-4">
+        <div class="col-md-4" id="cardInsumos" runat="server">
             <div class="card shadow-sm h-100">
                 <div class="card-body text-center">
 
@@ -74,7 +74,7 @@
         </div>
 
 
-        <div class="col-md-4">
+        <div class="col-md-4" id="cardUsuarios" runat="server">
             <div class="card shadow-sm h-100">
                 <div class="card-body text-center">
 
@@ -93,7 +93,7 @@
         </div>
 
 
-        <div class="col-md-4">
+        <div class="col-md-4" id="cardReportes" runat="server">
             <div class="card shadow-sm h-100">
                 <div class="card-body text-center">
 

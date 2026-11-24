@@ -15,6 +15,11 @@ namespace TPCuatrimestral_equipoD
     {
 
         /// <summary>
+        /// divAccionesGerente control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divAccionesGerente;
+
+        /// <summary>
         /// lblMensaje control.
         /// </summary>
         protected global::System.Web.UI.WebControls.Label lblMensaje;
@@ -23,6 +28,11 @@ namespace TPCuatrimestral_equipoD
         /// pnlSinMesas control.
         /// </summary>
         protected global::System.Web.UI.WebControls.Panel pnlSinMesas;
+
+        /// <summary>
+        /// lblSinMesas control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblSinMesas;
 
         /// <summary>
         /// repMesas control.

@@ -17,13 +17,6 @@
     </div>
 
     <asp:Label
-        ID="lblExito"
-        runat="server"
-        CssClass="alert alert-success d-block"
-        Visible="false">
-    </asp:Label>
-
-    <asp:Label
         ID="lblError"
         runat="server"
         CssClass="alert alert-danger d-block"

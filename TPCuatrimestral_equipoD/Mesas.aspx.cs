@@ -8,8 +8,17 @@ namespace TPCuatrimestral_equipoD
 {
     public partial class Mesas : System.Web.UI.Page
     {
+        protected bool EsGerente
+        {
+            get { return Seguridad.EsGerente(Session); }
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!Seguridad.ValidarAcceso(this)) return;
+
+            divAccionesGerente.Visible = EsGerente;
+
             if (!IsPostBack)
             {
                 CargarMesas();
@@ -19,7 +28,19 @@ namespace TPCuatrimestral_equipoD
         private void CargarMesas()
         {
             MesaNegocio negocio = new MesaNegocio();
-            List<Mesa> lista = negocio.listar(false);
+            List<Mesa> lista;
+
+            if (EsGerente)
+            {
+                lista = negocio.listar(false);
+                lblSinMesas.Text = "No hay mesas cargadas. Podes crear la primera desde \"Agregar Mesa\".";
+            }
+            else
+            {
+                Usuario usuario = Seguridad.ObtenerUsuario(Session);
+                lista = negocio.listarPorMesero(usuario.id);
+                lblSinMesas.Text = "No tenes mesas asignadas por el momento.";
+            }
 
             pnlSinMesas.Visible = (lista.Count == 0);
             repMesas.DataSource = lista;
@@ -28,6 +49,8 @@ namespace TPCuatrimestral_equipoD
 
         protected void repMesas_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
+            if (!Seguridad.EsGerente(Session)) return;
+
             lblMensaje.Visible = false;
             MesaNegocio negocio = new MesaNegocio();
 

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Dominio;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ namespace Negocio
 {
     public class PedidoNegocio
     {
-        public List<Pedido> listar(EstadoPedido? estado = null)
+        public List<Pedido> listar(EstadoPedido? estado = null, int? idMesero = null)
         {
             List<Pedido> lista = new List<Pedido>();
             AccesoDatos datos = new AccesoDatos();
@@ -24,14 +24,22 @@ namespace Negocio
                     "INNER JOIN Mesas M ON P.IdMesa = M.Id " +
                     "INNER JOIN Usuarios U ON P.IdMesero = U.Id";
 
+                List<string> condiciones = new List<string>();
                 if (estado.HasValue)
-                    consulta += " WHERE P.IdEstado = @estado";
+                    condiciones.Add("P.IdEstado = @estado");
+                if (idMesero.HasValue)
+                    condiciones.Add("P.IdMesero = @idMesero");
+
+                if (condiciones.Count > 0)
+                    consulta += " WHERE " + string.Join(" AND ", condiciones);
 
                 consulta += " ORDER BY P.FechaHoraApertura DESC";
 
                 datos.setearConsulta(consulta);
                 if (estado.HasValue)
                     datos.setearParametro("@estado", (int)estado.Value);
+                if (idMesero.HasValue)
+                    datos.setearParametro("@idMesero", idMesero.Value);
 
                 datos.ejecutarLectura();
 
@@ -271,7 +279,7 @@ namespace Negocio
             actualizarStock(idInsumo, -cantidad);
         }
 
-        public void eliminarDetalle(int idDetalle)
+        public void eliminarDetalle(int idDetalle, bool permitirEnCerrado = false)
         {
             int idPedido = 0;
             int idInsumo = 0;
@@ -305,7 +313,13 @@ namespace Negocio
             }
 
             Pedido pedido = buscarPorId(idPedido);
-            if (pedido == null || pedido.estado != EstadoPedido.Abierto)
+            if (pedido == null)
+                throw new Exception("El pedido no existe.");
+
+            if (pedido.estado == EstadoPedido.Cancelado)
+                throw new Exception("No se pueden quitar insumos de un pedido cancelado.");
+
+            if (pedido.estado != EstadoPedido.Abierto && !(permitirEnCerrado && pedido.estado == EstadoPedido.Cerrado))
                 throw new Exception("Solo se pueden quitar insumos de un pedido abierto.");
 
             AccesoDatos datosDelete = new AccesoDatos();

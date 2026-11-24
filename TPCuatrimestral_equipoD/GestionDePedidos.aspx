@@ -1,4 +1,4 @@
-﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master"
+<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.Master"
     AutoEventWireup="true"
     CodeBehind="GestionDePedidos.aspx.cs"
     Inherits="TPCuatrimestral_equipoD.GestionDePedidos" %>
@@ -21,13 +21,6 @@
         </a>
     </div>
 
-
-    <asp:Label
-        ID="lblExito"
-        runat="server"
-        CssClass="alert alert-success d-block"
-        Visible="false">
-    </asp:Label>
 
     <asp:Label
         ID="lblError"
@@ -346,6 +339,7 @@
                                     Text="Quitar"
                                     CommandName="Quitar"
                                     CommandArgument='<%# Eval("id") %>'
+                                    Visible='<%# PuedeQuitarInsumo %>'
                                     CssClass="btn btn-sm btn-outline-danger"
                                     OnClientClick="return confirm('Seguro que queres quitar este insumo?');">
                                 </asp:LinkButton>

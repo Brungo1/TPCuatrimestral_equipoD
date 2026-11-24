@@ -15,11 +15,6 @@ namespace TPCuatrimestral_equipoD
     {
 
         /// <summary>
-        /// lblExito control.
-        /// </summary>
-        protected global::System.Web.UI.WebControls.Label lblExito;
-
-        /// <summary>
         /// lblError control.
         /// </summary>
         protected global::System.Web.UI.WebControls.Label lblError;

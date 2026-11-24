@@ -279,5 +279,46 @@ namespace Negocio
                 datos.cerrarConexion();
             }
         }
+
+        public Usuario loguear(string nombreUsuario, string contrasenia)
+        {
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                datos.setearConsulta(
+                    "SELECT Id, NombreUsuario, Contrasenia, Nombre, Apellido, IdPerfil, Activo " +
+                    "FROM Usuarios " +
+                    "WHERE NombreUsuario = @usuario AND Contrasenia = @contrasenia AND Activo = 1"
+                );
+                datos.setearParametro("@usuario", nombreUsuario);
+                datos.setearParametro("@contrasenia", contrasenia);
+                datos.ejecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    Usuario aux = new Usuario();
+                    aux.id = (int)datos.Lector["Id"];
+                    aux.nombreusuario = (string)datos.Lector["NombreUsuario"];
+                    aux.contrasenia = (string)datos.Lector["Contrasenia"];
+                    aux.nombre = (string)datos.Lector["Nombre"];
+                    aux.apellido = (string)datos.Lector["Apellido"];
+                    aux.perfil = (PerfilUsuario)(int)datos.Lector["IdPerfil"];
+                    aux.activo = (bool)datos.Lector["Activo"];
+
+                    return aux;
+                }
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.cerrarConexion();
+            }
+        }
     }
 }

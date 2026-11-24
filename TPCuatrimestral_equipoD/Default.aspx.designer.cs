@@ -1,4 +1,4 @@
-﻿//------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // <generado automáticamente>
 //     Este código fue generado por una herramienta.
 //
@@ -13,5 +13,20 @@ namespace TPCuatrimestral_equipoD
 
     public partial class Default
     {
+
+        /// <summary>
+        /// cardInsumos control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl cardInsumos;
+
+        /// <summary>
+        /// cardUsuarios control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl cardUsuarios;
+
+        /// <summary>
+        /// cardReportes control.
+        /// </summary>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl cardReportes;
     }
 }
