@@ -68,6 +68,7 @@ namespace TPCuatrimestral_equipoD
         protected void btnGuardarAsignaciones_Click(object sender, EventArgs e)
         {
             lblError.Visible = false;
+            lblExito.Visible = false;
 
             try
             {
@@ -109,6 +110,9 @@ namespace TPCuatrimestral_equipoD
                 }
 
                 CargarAsignaciones();
+
+                lblExito.Text = "Las asignaciones se guardaron correctamente.";
+                lblExito.Visible = true;
             }
             catch (Exception ex)
             {
@@ -120,6 +124,7 @@ namespace TPCuatrimestral_equipoD
         protected void btnLimpiarAsignaciones_Click(object sender, EventArgs e)
         {
             lblError.Visible = false;
+            lblExito.Visible = false;
 
             try
             {

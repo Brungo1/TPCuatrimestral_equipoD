@@ -23,6 +23,13 @@
         Visible="false">
     </asp:Label>
 
+    <asp:Label
+        ID="lblExito"
+        runat="server"
+        CssClass="alert alert-success d-block"
+        Visible="false">
+    </asp:Label>
+
     <div class="card shadow-sm">
         <div class="card-body">
             <div class="table-responsive">

@@ -20,6 +20,11 @@ namespace TPCuatrimestral_equipoD
         protected global::System.Web.UI.WebControls.Label lblError;
 
         /// <summary>
+        /// lblExito control.
+        /// </summary>
+        protected global::System.Web.UI.WebControls.Label lblExito;
+
+        /// <summary>
         /// dgvAsignaciones control.
         /// </summary>
         protected global::System.Web.UI.WebControls.GridView dgvAsignaciones;

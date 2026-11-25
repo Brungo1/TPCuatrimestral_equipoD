@@ -97,4 +97,5 @@ VALUES
 ('mesero1', '1234', 'Juan', 'Perez', 2, 1),
 ('mesero2', '1234', 'Pedro', 'Lopez', 2, 1);
 GO
+use RESTO_DB
 select *from Usuarios
